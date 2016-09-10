@@ -1,37 +1,31 @@
-// Copyright 2015-2016, Google, Inc.
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//    http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 
-'use strict';
-
-var express = require('express');
+var express = require('express')
+var session = require('express-session')
 
 var app = express();
 
-// [START hello_world]
-// Say hello!
-app.get('/', function (req, res) {
-  res.status(200).send('Hello, world!');
+app.use(session({
+    secret: '2nfQWU$n)z5WdfyWZ',
+    genid: function(req) {
+        return require('crypto').randomBytes(64).toString('hex')
+    },
+    resave: false,
+    saveUninitialized: true
+}));
+
+var all = require('./routes/all');
+
+// Connect to MongoDB
+var mongodb = require('./modules/db');
+mongodb.connect('mongodb://cloud11recruitment:1234567890aA@ds011775.mlab.com:11775/recruitment-app', function () {
+    console.log('Connected to MongoDB.');
 });
-// [END hello_world]
 
-if (module === require.main) {
-  // [START server]
-  // Start the server
-  var server = app.listen(process.env.PORT || 8080, function () {
-    var port = server.address().port;
-    console.log('App listening on port %s', port);
-  });
-  // [END server]
-}
+app.use('/', all);
 
-module.exports = app;
+PORT = 8080;
+var server = app.listen(PORT, function () {
+  var port = server.address().port;
+
+  console.log('Magic happens at ' + port);
+});

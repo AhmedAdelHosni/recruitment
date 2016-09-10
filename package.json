@@ -14,7 +14,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
-    "mongodb": "^2.2.9"
+    "express-session": "^1.14.1",
+    "mongodb": "^2.2.9",
+    "mongoose": "^4.6.0",
+    "nconf": "^0.8.4",
+    "passport": "^0.3.2",
+    "passport-google-oauth20": "^1.0.0"
   }
 }
