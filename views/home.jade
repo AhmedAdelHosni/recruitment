@@ -1,0 +1,8 @@
+extends base.jade
+
+block content
+
+    - for (var i = forms.length - 1; i >= 0; i--)
+        p #{forms[i].name}
+
+- // show a list of forms here, a(href="/viewform?id=..") form a(href="/edit?id=..")

@@ -1,0 +1,11 @@
+extends base.jade
+
+block content
+    .row
+        .column
+            form.form-horizontal(action="/submitform", method="post")
+                div.input
+                    span.label Name:
+                    input(type="text",name="name")
+                div.actions
+                    input(type="submit", value="add")

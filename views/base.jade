@@ -1,0 +1,35 @@
+- var navBarItems = [{'page':'/create', 'name': 'create'}, {"page": '/', 'name': 'home'}]
+doctype html
+html(lang="en")
+  head
+    title #{title}
+    meta(charset='utf-8')
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    link(rel="stylesheet", href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css")
+  body
+    .navbar.navbar-default
+      .container
+        .navbar-header
+          .navbar-brand Bookshelf
+
+        ul.nav.navbar-nav
+          if profile
+            - for (var i = navBarItems.length - 1; i >= 0; i--)
+                if page == navBarItems[i].page
+                  li.active
+                    a(onclick='return false;') #{navBarItems[i].name}
+                else
+                  li
+                    a(href="#{navBarItems[i].page}") #{navBarItems[i].name}
+
+            
+        p.navbar-text.navbar-right
+          if profile
+            if profile.image
+              img.img-circle(src=profile.image, width=24)
+            span &nbsp; #{profile.displayName} &nbsp;
+              a(href=logout) (logout)
+          else
+            a(href=login) Log in/Sign up with google
+    .container
+      block content
