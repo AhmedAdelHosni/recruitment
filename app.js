@@ -5,6 +5,7 @@ var passport = require('passport');
 var path = require('path');
 var config = require('./config');
 var bodyParser = require('body-parser');
+
 var app = express();
 app.use(session({
     resave: false,
@@ -12,14 +13,7 @@ app.use(session({
     secret: config.get('SECRET'),
     signed: true
 }));
-// app.use(session({
-//     secret: config.get('SECRET'),
-//     genid: function(req) {
-//         return require('crypto').randomBytes(64).toString('hex')
-//     },
-//     resave: false,
-//     saveUninitialized: true
-// }));
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
@@ -36,6 +30,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 
 //OAuth2
+app.use(express.static(__dirname + '/statics'));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(require('./modules/oauth2').router);

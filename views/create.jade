@@ -1,11 +1,39 @@
 extends base.jade
 
 block content
-    .row
-        .column
-            form.form-horizontal(action="/submitform", method="post")
-                div.input
-                    span.label Name:
-                    input(type="text",name="name")
-                div.actions
-                    input(type="submit", value="add")
+  script(src="/main.js")
+
+  .container
+      form(id="form")
+        h2 Form Information:
+        br
+        .form-group.row
+            label.col-sm-2.col-form-label(for="title") Title*:
+            .col-sm-3
+                input.form-control(type="text",name="title",id="title",required)
+            label.col-sm-2.col-form-label(for="companyName") Company Name*:
+            .col-sm-3
+                input.form-control(type="text",name="companyName",id="companyName",required)
+        .form-group.row
+            label.col-sm-2.col-form-label(for="description") Description*:
+            .col-sm-3
+                textarea.form-control(id="exampleTextarea",rows="3",form="form",required)
+            label.col-sm-2.col-form-label(for="bannerUrl") Banner URL:
+            .col-sm-3
+                input.form-control(type="text",name="bannerUrl",id="bannerUrl")
+        hr
+        h2 Fields:
+        br
+        .container(id="fields")
+
+        .form-group.row.text-center
+            btn.btn.btn-success(type="button",id="addFieldBtn") Add Field
+        hr
+        h2 Applicant Confirmation Email
+        br
+
+            
+
+
+
+        button.btn.btn-primary(type="submit",id="submit") Submit Form

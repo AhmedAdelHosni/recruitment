@@ -3,8 +3,13 @@ var Schema  = mongoose.Schema;
 
 var FormSchema = new Schema({
     formId: String,
-    name: String,
-    email: String,
+    title: String,
+    recruiterEmail: String,
+    companyName: String,
+    companyBannerUrl: String,
+    description: String,
+    confirmationEmailForm: String,
+    
     fields: [{
       name: String,
       type: String,

@@ -41,15 +41,7 @@ router.post('/submitform', function (req, res) {
     var myForm = new FormSchema({ name: body.name, formId: formId});
     myForm.save();
     UserSchema.findOneAndUpdate({gid: req.user.id}, 
-        {
-            $push: {
-                // "forms": {
-                //     formId: formId,
-                //     name: body.name
-                // }
-                "forms": myForm
-            }
-        },
+        { $push: {"forms": myForm} },
         function (err, updatedUser) {
             if(err){
                 return res.send({"success": false, "error": err.message});
