@@ -1,9 +1,13 @@
 extends base.jade
 
 block content
-  script(src="/main.js")
+  script(src="/createoreditHelpers.js")
+  if action == "create"
+    script(src="/create.js")
+  else
+    script(src="/edit.js")
 
-  .container
+  .container(style="margin-bottom: 50px")
       form(id="form")
         h2 Form Information:
         br
@@ -17,7 +21,7 @@ block content
         .form-group.row
             label.col-sm-2.col-form-label(for="description") Description*:
             .col-sm-3
-                textarea.form-control(id="exampleTextarea",rows="3",form="form",required)
+                textarea.form-control(id="description",rows="3",name="description",form="form",required)
             label.col-sm-2.col-form-label(for="bannerUrl") Banner URL:
             .col-sm-3
                 input.form-control(type="text",name="bannerUrl",id="bannerUrl")
@@ -29,8 +33,15 @@ block content
         .form-group.row.text-center
             btn.btn.btn-success(type="button",id="addFieldBtn") Add Field
         hr
-        h2 Applicant Confirmation Email
+        h2 Applicant Confirmation Email:
         br
+        hr
+        h2 Email Information:
+        br
+        .form-group.row
+            label.col-sm-2.col-form-label(for="recruiterEmail") Recruiter Email*:
+            .col-sm-3
+                input.form-control(type="email",name="recruiterEmail",id="recruiterEmail",required)
 
             
 

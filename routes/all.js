@@ -15,7 +15,7 @@ router.get('/', function (req, res, next) {
     var query = UserSchema.findOne({gid: req.user.id});
     query.populate({
         path: 'forms',
-        select: 'formId name'
+        select: 'formId title fields'
     });
     query.exec(function (err, user) {
         console.log(user.forms);
@@ -28,32 +28,68 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/create', function (req, res) {
-    res.render('create.jade', {title: "Create New Form"})
+    res.render('createormodify.jade', {title: "jCreate New Form", action: "create"});
 });
 
 router.get('/edit', function (req, res) {
-    // res.render('create.jade')
+    res.render('createormodify.jade', {title: "Edit form", action: "edit"});
 });
 
 router.post('/submitform', function (req, res) {
     var body = req.body;
-    var formId = crypto.randomBytes(14).toString('hex');
-    var myForm = new FormSchema({ name: body.name, formId: formId});
-    myForm.save();
-    UserSchema.findOneAndUpdate({gid: req.user.id}, 
-        { $push: {"forms": myForm} },
-        function (err, updatedUser) {
+    var formObject = {
+        title: body.title,
+        companyName: body.companyName,
+        description: body.description,
+        companyUrl: body.companyUrl,
+        recruiterEmail: body.recruiterEmail,
+        fields: JSON.parse(body.fields)
+    };
+    var form = new FormSchema(formObject);
+
+    if(body.hasOwnProperty("id")){
+        FormSchema.findByIdAndUpdate(body.id, formObject, function(err,formSaved){
+            console.log()
             if(err){
-                return res.send({"success": false, "error": err.message});
+                return res.send({"success": false, "error": JSON.stringify(err)});
             }
-            res.send({"success": true, "formId": formId});
+            res.send({"success": true, "formId": body.id});
+        });
+    }
+    else {
+        form.save(function(err,formSaved){
+            if(err){
+                return res.send({"success": false, "error": JSON.stringify(err)});
+            }        
+            UserSchema.findOneAndUpdate({gid: req.user.id}, 
+            { $push: {"forms": form} },
+            function (err, updatedUser) {
+                if(err){
+                    return res.send({"success": false, "error": JSON.stringify(err)});
+                }
+                res.send({"success": true, "formId": form._id.toString()});
+            });//end findOneAndUpdate
+        });
+    }
+    
+
+});
+router.post('/getform', function (req, res) {
+    var query = FormSchema.findById(req.body.id);
+    query.exec(function (err, form) {
+        if(err){
+            res.send({"success": false, "error": JSON.stringify(err)});
         }
-    );//end findByIdAndUpdate
+        res.send({"success": true, "form": form});
+    });
 
 });
 
-router.post('/getform', function (req, res) {
-    //for editform page ajax to get the form data using an id
+router.get('/delete', function (req, res) {
+    FormSchema.findById(req.query.id).remove(function(err, deletedForm){
+        res.render("removed.jade", {"title": "Form Removed"});
+    });
+
 });
 
 

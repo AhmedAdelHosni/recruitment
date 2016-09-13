@@ -1,3 +1,5 @@
+var currentFieldIndex = 0;
+
 var field =// change id,name,for
 '<div id="field--" style="border: 2px;border-style: dotted;padding: 10px;margin: 8px;" class="container"> \
    <div class="form-group row"> \
@@ -8,7 +10,7 @@ var field =// change id,name,for
       \
       <label for="type--" class="col-sm-2 col-form-label">Field Type:</label> \
       <div class="col-sm-3"> \
-         <select class="form-control" id="type--" required> \
+         <select class="form-control typeselect" id="type--" required> \
             <option selected>Text</option> \
             <option>Number</option> \
             <option>Email</option> \
@@ -32,11 +34,29 @@ var field =// change id,name,for
       <div id="optionsdiv--" style="display: none;">\
         <label for="options--" class="col-sm-2 col-form-label">Options:</label> \
         <div class="col-sm-3"> \
-         <input type="text" name="options--" id="options--" class="form-control"> \
+         <input type="text" name="options--" id="options--" class="form-control" placeholder="E.g: option1,option2"> \
+         <small class="form-text text-muted" id="optionshelp--">Help Text</small> \
         </div> \
       </div> \
    </div> \
 </div>';
+
+var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : sParameterName[1];
+        }
+    }
+};
+
+
 jQuery.extend(jQuery.expr[':'], {
     invalid : function(elem, index, match){
         var invalids = document.querySelectorAll(':invalid'),
@@ -55,23 +75,30 @@ jQuery.extend(jQuery.expr[':'], {
     }
 });
 
-var currentFieldIndex = 0;
-
 function showOptions(index) {
     $("#optionsdiv-"+index+"-").show();
-    $("#options-"+index+"-").prop("required");
+    $("#options-"+index+"-").prop("required",true);
+    if($("#type-"+index+"-").val() == "File") {
+      $("#optionshelp-"+index+"-").html("Please input valid file extensions.");
+      $("#options-"+index+"-").prop("placeholder",".doc,.docx,.pdf");
+    }
+    else if ($("#type-"+index+"-").val() == "Select"){
+      $("#optionshelp-"+index+"-").html("Please input valid options.");
+      $("#options-"+index+"-").prop("placeholder","option1,option2");
+    }
 }
 
 function hideOptions(index) {
     $("#optionsdiv-"+index+"-").hide();
     $("#options-"+index+"-").removeProp("required");
+    $("#options-"+index+"-").val("");
 }
 
 function addField() {
     currentFieldIndex++;
     $("#fields").append(replaceAll(field,"--","-"+currentFieldIndex+"-"));
-    // $("#fields").append(field.replace(/--/g,"-"+currentFieldIndex+"-"));
 }
+
 function extractIndex(id) {
     return parseInt(id.split("-")[1]);
 }
@@ -79,17 +106,15 @@ function replaceAll(str,search,replace){
     return str.split(search).join(replace);
 }
 
-$(document).ready(function(){
-    addField();
-    addField();
-    $("#name-1-").val("First Name");
-    $("#name-2-").val("Last Name");
-
-    $("#name-1-, #name-2-").prop("disabled",true);
-    $("#isRequired-1-no, #isRequired-2-no").prop("disabled",true);
-    $("#type-1-, #type-2-").prop("disabled",true);
-    $("#remove-1-, #remove-2-").addClass("disabled");
+$(document).on("change", ".typeselect", function(){
+    var index = extractIndex($(this).prop("id"));
+    if($(this).val()=="File" || $(this).val() == "Select")
+      showOptions(index);
+    else 
+      hideOptions(index);
 });
+
+
 
 $(document).on("click", "#addFieldBtn", function(){
     addField();
@@ -104,47 +129,80 @@ $(document).on("click", ".removeField", function(){
     currentFieldIndex--;
 });
 
+function constructData() {
+  var data = {
+        title: $("#title").val(),
+        companyName: $("#companyName").val(),
+        description: $("#description").val(),
+        bannerUrl: $("#bannerUrl").val(),
+        recruiterEmail: $("#recruiterEmail").val()
+    };
+
+    if(getUrlParameter("id")){
+      console.log("got id="+getUrlParameter("id"))
+      data.id = getUrlParameter("id");
+    }
+    console.log("id=");console.log(getUrlParameter("id"));
+
+    var fields = [];
+    for (var i = 1; i <= currentFieldIndex ; i++) {
+        var field = {
+            name : $("#name-"+i+"-").val(),
+            type : $("#type-"+i+"-").val(),
+            isRequired : $("input[name=isRequired-"+i+"-]:checked").val() == "yes" ? true : false
+        };
+        
+        if($("#options-"+i+"-").val() == undefined || $("#options-"+i+"-").val() == "")
+          field.options = [""];
+        else {
+          field.options = $("#options-"+i+"-").val().split(",")
+          for (var j = field.options.length - 1; j >= 0; j--)
+            field.options[j] = $.trim(field.options[j]);
+        }
+
+        fields.push(field);
+    }
+
+    for (var i = fields.length - 1; i >= 0; i--)
+      for (var j = i - 1; j >= 0; j--)
+        if($.trim(fields[i].name.toLowerCase()) == $.trim(fields[j].name.toLowerCase()))
+          return false;
+
+    data.fields = JSON.stringify(fields);
+    return data;
+}
+
+
+function submitData(data) {
+  var url = "/submitform";
+  $.ajax({
+    type: "POST",
+    url: url,
+    data: data,
+    success: function(ret){
+      if(ret.success)
+        window.location = "/edit?id="+ret.formId;
+      else
+        alert("An error has occured.");
+    }
+  });
+}
+
 $(document).on("click", "#submit", function(event){
     fields = $('input,textarea,select').filter('[required]:visible');
     var flag = false;
     for (var i = fields.length - 1; i >= 0; i--) 
         if( $(fields[i]).is(':invalid') )
-            flag = true;
-    if(flag)
-        return;
-    
+            return;
 
-    var json = {
-        title: $("#title").val(),
-        companyName: $("#companyName").val(),
-        exampleTextarea: $("#exampleTextarea").val(),
-        bannerUrl: $("#bannerUrl").val(),
-        fields: []
-    };
-    for (var i = 1; i <= currentFieldIndex ; i++) {
-        json.fields.push({
-            name : $("#name-"+i+"-").val(),
-            type : $("#type-"+i+"-").val(),
-            options : $("#options-"+i+"-").val(),
-            isRequired : $("input[name=isRequired-"+i+"-]:checked").val()
-        });
-    }
-    var allFieldNames = []
-    for (var i = json.fields.length - 1; i >= 0; i--)
-        allFieldNames.push(json.fields[i].name);
-    uniqueArray = allFieldNames.filter(function(item, pos) {
-        return allFieldNames.indexOf(item) == pos;
-    });
-    if(uniqueArray.length != allFieldNames.length){
-        flag = true;
-    }
+    var data = constructData();
 
-    if(flag){
+    if(data == false){
         alert("You can not have two fields with the same name.");
-        // event.preventDefault();
         return false;
     }
-    alert("success");
-    // event.preventDefault();
+    
+    submitData(data);
     return false;
 });
+

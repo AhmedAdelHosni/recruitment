@@ -1,8 +1,34 @@
 extends base.jade
 
 block content
+    h2 My Forms
+    br
+    if forms.length == 0
+        h3
+            | You have no forms yet, create one 
+            a(href="/create") here
+            | .
+    else
+        table.table.table-striped.table-bordered
+            tr.row
+                th.col-sm-4
+                    | #
+                th.col-sm-4
+                    | Name
+                th.col-sm-4
+                    | Edit
+                th.col-sm-4
+                    | Delete
+            - for (var i = 0; i < forms.length ; i++)
+                tr.row
+                    td.col-sm-4
+                        | #{i+1}
+                    td.col-sm-4
+                        | #{forms[i].title}
+                    td.col-sm-4
+                        a.btn.btn-primary(href="/edit?id=#{forms[i]._id}") Edit
+                    td.col-sm-4
+                        a.btn.btn-danger(href="/delete?id=#{forms[i]._id}") Delete
 
-    - for (var i = forms.length - 1; i >= 0; i--)
-        p #{forms[i].name}
 
 - // show a list of forms here, a(href="/viewform?id=..") form a(href="/edit?id=..")
