@@ -1,0 +1,61 @@
+doctype html
+html(lang="en")
+    head
+        title #{title}
+        meta(charset='utf-8')
+        meta(name="viewport", content="width=device-width, initial-scale=1")
+        script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js")
+        script(src="general.js")
+        link(rel="stylesheet", href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css")
+        script.
+            $(document).ready(function(){
+                $("#id").val(getUrlParameter("id"));
+            });
+    body
+        .container
+            if form.companyBannerUrl
+                img(href="#{form.companyBannerUrl}")
+
+            h2 #{form.companyName} - #{form.title}
+
+            p #{form.description}
+            br
+            br
+            hr
+
+            form(method="post",action="/applicantsubmit",enctype="multipart/form-data")
+                input(hidden,id="id",name="id")
+                - for (var i = 0; i < form.fields.length; i+=2)
+                    - var rowFields = [form.fields[i]]
+                    if i+1 < form.fields.length
+                       - rowFields.push(form.fields[i+1])
+
+                    .form-group.row
+                        - for (var j = 0; j < rowFields.length; j++)
+                            - var field = rowFields[j]
+                            - var name = field.name + ":" + (field.isRequired ? "*" : "")
+                            label(for="#{field.name}",class="col-sm-2 col-form-label") #{name}
+                            .col-sm-3
+                                if field.isRequired
+                                    if field.type == "Select"
+                                        select.form-control.typeselect(id="#{field.name}",name="#{name}")
+                                            - for (var k = 0; k < field.options.length; k++)
+                                                option #{field.options[k]}
+                                    else if field.type == "File"
+                                        - for( var k = 0; k < field.options.length; k++)
+                                            - field.options[k] = (field.options[k][0]!="."?".":"")+field.options[k]
+                                        input.form-control(type="#{field.type}",name="#{field.name}",id="#{field.name}",required,accept="#{field.options.join(',')}")
+                                    else
+                                        input.form-control(type="#{field.type}",name="#{field.name}",id="#{field.name}",required)
+                                else
+                                    if field.type == "Select"
+                                        select.form-control.typeselect(id="#{field.name}",name="#{name}")
+                                            - for (var k = 0; k < field.options.length; k++)
+                                                option #{field.options[k]}
+                                    else if field.type == "File"
+                                        - for( var k = 0; k < field.options.length; k++)
+                                            - field.options[k] = (field.options[k][0]!="."?".":"")+field.options[k]
+                                        input.form-control(type="#{field.type}",name="#{field.name}",id="#{field.name}",accept="#{field.options.join(',')}")
+                                    else
+                                        input.form-control(type="#{field.type}",name="#{field.name}",id="#{field.name}")
+                button.btn.btn-primary(type="submit",id="submit") Submit

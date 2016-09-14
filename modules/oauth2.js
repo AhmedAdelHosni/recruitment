@@ -60,8 +60,12 @@ passport.use(new GoogleStrategy({
         "image": imageUrl,
         "gid": profile.id,
         "email": profile.emails[0].value,
-        "name": profile.displayName
+        "name": profile.displayName,
+        "accessToken": accessToken
     };
+    if(refreshToken)
+        user.refreshToken = refreshToken;
+    
     UserSchema.findOneAndUpdate(query, user, {upsert:true}, function(err, doc){
         // Extract the minimal profile information we need from the profile object
         // provided by Google
@@ -111,7 +115,11 @@ function addTemplateVariables (req, res, next) {
 // then they will be redirected to that URL when the flow is finished.
 // [START authorize]
 // Start OAuth 2 flow using Passport.js
-router.get('/auth/login', passport.authenticate('google', { scope: ['email', 'profile'] })  );
+
+router.get('/auth/login', passport.authenticate('google', {
+                                        scope: ['email', 'profile', 'https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/spreadsheets'],
+                                        accessType: 'offline',
+                                        approvalPrompt: 'force'}));
 // [END authorize]
 
 // [START callback]

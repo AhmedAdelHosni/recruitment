@@ -10,7 +10,7 @@ var field =// change id,name,for
       \
       <label for="type--" class="col-sm-2 col-form-label">Field Type:</label> \
       <div class="col-sm-3"> \
-         <select class="form-control typeselect" id="type--" required> \
+         <select class="form-control typeselect" name="type--" id="type--" required> \
             <option selected>Text</option> \
             <option>Number</option> \
             <option>Email</option> \
@@ -41,46 +41,12 @@ var field =// change id,name,for
    </div> \
 </div>';
 
-var getUrlParameter = function getUrlParameter(sParam) {
-    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-        sURLVariables = sPageURL.split('&'),
-        sParameterName,
-        i;
-
-    for (i = 0; i < sURLVariables.length; i++) {
-        sParameterName = sURLVariables[i].split('=');
-
-        if (sParameterName[0] === sParam) {
-            return sParameterName[1] === undefined ? true : sParameterName[1];
-        }
-    }
-};
-
-
-jQuery.extend(jQuery.expr[':'], {
-    invalid : function(elem, index, match){
-        var invalids = document.querySelectorAll(':invalid'),
-            result = false,
-            len = invalids.length;
-
-        if (len) {
-            for (var i=0; i<len; i++) {
-                if (elem === invalids[i]) {
-                    result = true;
-                    break;
-                }
-            }
-        }
-        return result;
-    }
-});
-
 function showOptions(index) {
     $("#optionsdiv-"+index+"-").show();
     $("#options-"+index+"-").prop("required",true);
     if($("#type-"+index+"-").val() == "File") {
       $("#optionshelp-"+index+"-").html("Please input valid file extensions.");
-      $("#options-"+index+"-").prop("placeholder",".doc,.docx,.pdf");
+      $("#options-"+index+"-").prop("placeholder","doc,docx,pdf");
     }
     else if ($("#type-"+index+"-").val() == "Select"){
       $("#optionshelp-"+index+"-").html("Please input valid options.");

@@ -8,13 +8,9 @@ var FormSchema = new Schema({
     companyBannerUrl: String,
     description: String,
     confirmationEmailForm: String,
-    fields: {
-        type: Array
-      // name: String,
-      // type: String,
-      // isRequired: Boolean,
-      // options: [String]
-    }
+    folderId: String,
+    sheetsId: String,
+    fields: { type: Array }
 }, {collection: 'Form'});
 
 // FormSchema.pre('remove', function(next) {

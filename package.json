@@ -18,12 +18,17 @@
     "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
     "express-session": "^1.14.1",
+    "google-auth-library": "^0.9.8",
+    "googleapis": "^13.0.0",
     "jade": "^1.11.0",
+    "mime": "^1.3.4",
     "mongodb": "^2.2.9",
     "mongoose": "^4.6.0",
+    "multer": "^1.2.0",
     "nconf": "^0.8.4",
     "passport": "^0.3.2",
     "passport-google-oauth20": "^1.0.0",
+    "promise": "^7.1.1",
     "pug": "^2.0.0-beta6"
   }
 }
