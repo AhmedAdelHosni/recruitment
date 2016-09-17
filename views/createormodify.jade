@@ -8,6 +8,11 @@ block content
     script(src="/edit.js")
 
   .container(style="margin-bottom: 50px")
+      if action =="edit"
+        h1 Edit Form
+        h2
+            | You can view the form 
+            a(href="/view?id=#{id}") here 
       form(id="form")
         h2 Form Information:
         br

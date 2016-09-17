@@ -15,10 +15,12 @@
 
 var express = require('express');
 var config = require('../config');
-var url = require('url');
+var url = require ('url');
 
 // [START setup]
 var passport = require('passport');
+var refresh = require('passport-oauth2-refresh');
+
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var UserSchema = require('../models/User');
 
@@ -42,7 +44,7 @@ function extractProfile (profile) {
 // along with the user's profile. The function must invoke `cb` with a user
 // object, which will be set at `req.user` in route handlers after
 // authentication.
-passport.use(new GoogleStrategy({
+var myGoogleStrategy = new GoogleStrategy({
     clientID: config.get('OAUTH2_CLIENT_ID'),
     clientSecret: config.get('OAUTH2_CLIENT_SECRET'),
     callbackURL: config.get('OAUTH2_CALLBACK'),
@@ -71,7 +73,10 @@ passport.use(new GoogleStrategy({
         // provided by Google
         cb(null, extractProfile(profile));
     });
-}));
+});
+
+refresh.use(myGoogleStrategy);
+passport.use(myGoogleStrategy);
 
 passport.serializeUser(function (user, cb) {
     cb(null, user);
@@ -90,7 +95,6 @@ var router = express.Router();
 function authRequired (req, res, next) {
     if (!req.user) {
         req.session.oauth2return = req.originalUrl;
-        console.log("!req.user");
         return res.redirect('/notloggedin');
     }
     next();
@@ -99,7 +103,6 @@ function authRequired (req, res, next) {
 // Middleware that exposes the user's profile as well as login/logout URLs to
 // any templates. These are available as `profile`, `login`, and `logout`.
 function addTemplateVariables (req, res, next) {
-    console.log("addTemplateVariables");
     res.locals.profile = req.user;
     res.locals.page = url.parse(req.url).pathname;
     res.locals.login = '/auth/login';
@@ -117,7 +120,7 @@ function addTemplateVariables (req, res, next) {
 // Start OAuth 2 flow using Passport.js
 
 router.get('/auth/login', passport.authenticate('google', {
-                                        scope: ['email', 'profile', 'https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/spreadsheets'],
+                                        scope: ['email', 'profile', 'https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/spreadsheets','https://www.googleapis.com/auth/gmail.send'],
                                         accessType: 'offline',
                                         approvalPrompt: 'force'}));
 // [END authorize]

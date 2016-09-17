@@ -5,12 +5,6 @@ $(document).ready(function(){
     data: {id: getUrlParameter("id")},
     success: function(ret){
       if(ret.success){
-
-        $("#name-1-, #name-2-").prop("disabled",true);
-        $("#isRequired-1-no, #isRequired-2-no").prop("disabled",true);
-        $("#type-1-, #type-2-").prop("disabled",true);
-        $("#remove-1-, #remove-2-").addClass("disabled");
-
         var form = ret.form;
         
         $("#title").val(form.title);
@@ -31,6 +25,11 @@ $(document).ready(function(){
             $("input[name=isRequired-"+i+"-][value=no]").prop("checked",true);
           $("#options-"+i+"-").val(field.options.join(","));
         }
+
+        $("#name-1-, #name-2-,#name-3-").prop("disabled",true);
+        $("#isRequired-1-no, #isRequired-2-no, #isRequired-3-no").prop("disabled",true);
+        $("#type-1-, #type-2-, #type-3-").prop("disabled",true);
+        $("#remove-1-, #remove-2-, #remove-3-").addClass("disabled");
 
       }//end if success
       else

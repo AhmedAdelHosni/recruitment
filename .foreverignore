@@ -1,0 +1,5 @@
+uploads/
+uploads/*
+*.jade
+statics/
+statics/*

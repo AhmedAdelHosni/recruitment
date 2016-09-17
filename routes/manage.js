@@ -17,7 +17,6 @@ router.get('/', function(req, res, next) {
         select: 'formId title fields'
     });
     query.exec(function(err, user) {
-        console.log(user.forms);
         res.render('home.jade', {
                 title: "Cloud 11 - Recruitment App",
                 forms: user.forms
@@ -31,7 +30,7 @@ router.get('/create', function(req, res) {
 });
 
 router.get('/edit', function(req, res) {
-    res.render('createormodify.jade', {title: "Edit form", action: "edit"});
+    res.render('createormodify.jade', {title: "Edit form", action: "edit", id: req.query.id});
 });
 
 router.post('/submitform', function(req, res) {

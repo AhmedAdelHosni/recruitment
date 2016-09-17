@@ -5,7 +5,8 @@ var field =// change id,name,for
    <div class="form-group row"> \
       <label for="name--" class="col-sm-2 col-form-label">Field Name:</label> \
       <div class="col-sm-3"> \
-        <input type="text" name="name--" id="name--" class="form-control" required> \
+        <input type="text" name="name--" id="name--" class="form-control" pattern="[a-zA-Z0-9 ]+" required> \
+        <small class="form-text text-muted" >Only letters, numbers and spaces allowed</small> \
       </div> \
       \
       <label for="type--" class="col-sm-2 col-form-label">Field Type:</label> \
@@ -146,8 +147,10 @@ function submitData(data) {
     url: url,
     data: data,
     success: function(ret){
-      if(ret.success)
+      if(ret.success){
+        alert("Form has been updates successfully.");
         window.location = "/edit?id="+ret.formId;
+      }
       else
         alert("An error has occured.");
     }
