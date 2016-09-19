@@ -1,4 +1,6 @@
-var Promise = require('promise');
+var Promise = require('promise'),
+    fs = require('fs'),
+    mime = require('mime');
 
 function shareFile(driveService, fileId, callback) {
     var email = require('../auth.json').client_email;
@@ -44,11 +46,8 @@ function createFile(fileName, mimeType, driveService, parentsIds, resolve, rejec
         'name' : fileName,
         'mimeType' : mimeTypes[mimeType],
     };
-    console.log("im here1");
-    console.log(parentsIds);
     if(parentsIds != null)
         fileMetaData.parents = parentsIds;
-    console.log("im here2");
     var params = {
         resource: fileMetaData,
         fields: "id"
@@ -78,12 +77,15 @@ function createDoc(fields, formData, driveService, parentsIds, resolve, reject) 
         <h2 style='text-align:center;'> "+formData['First Name']+" "+formData["Last Name"]+"</h2> \
         <table style='border: solid;'> ";
     for (var i = 0; i < fields.length; i++) {
+        var value = "";
         if(fields[i].type.toLowerCase()=="file") continue;
         if(fields[i].name.toLowerCase()=="first name"||fields[i].name.toLowerCase()=="last name") continue;
         body+="<tr style='padding: 10px;'> \
-                <td> "+fields[i].name+"</td> \
-                <td> "+formData[fields[i].name]+"</td> \
-            </tr>";
+                <td> "+fields[i].name+"</td> ";
+        if(formData[fields[i].name])
+            value = formData[fields[i].name];
+        body+="<td> "+value+"</td>";
+        body+="</tr>";
     }
     body+="</table></body>";
 
@@ -139,11 +141,9 @@ function uploadFile(name, path, driveService, parentsIds, resolve, reject) {
 function uploadFiles(files, driveService, parentsIds, resolve, reject) {
     var allFilesPromises = [];
     for (var i = files.length - 1; i >= 0; i--) {
-
         var filePromise = new Promise(function (resolve, reject){
-            uploadFile(files[i].originalname,files[i].path, driveService, parentsIds, resolve, reject);
+            uploadFile(files[i].originalname, files[i].path, driveService, parentsIds, resolve, reject);
         }); //end promise
-
         allFilesPromises.push(filePromise);
     }
 

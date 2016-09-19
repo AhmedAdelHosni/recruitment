@@ -17,7 +17,8 @@ html(lang="en")
                 img.img-responsive.center-block(src="#{form.companyBannerUrl}",style="height:350px;max-width:1000px;")
 
             h2 #{form.companyName} - #{form.title}
-            p #{form.description}
+            - for (var i = 0; i < form.description.split("\n").length; i++)
+                p #{form.description.split("\n")[i]}
 
             br
             br
@@ -38,7 +39,7 @@ html(lang="en")
                             .col-sm-3
                                 if field.isRequired
                                     if field.type == "Select"
-                                        select.form-control.typeselect(id="#{field.name}",name="#{name}")
+                                        select.form-control.typeselect(id="#{field.name}",name="#{field.name}")
                                             - for (var k = 0; k < field.options.length; k++)
                                                 option #{field.options[k]}
                                     else if field.type == "File"
@@ -49,7 +50,7 @@ html(lang="en")
                                         input.form-control(type="#{field.type}",name="#{field.name}",id="#{field.name}",required)
                                 else
                                     if field.type == "Select"
-                                        select.form-control.typeselect(id="#{field.name}",name="#{name}")
+                                        select.form-control.typeselect(id="#{field.name}",name="#{field.name}")
                                             - for (var k = 0; k < field.options.length; k++)
                                                 option #{field.options[k]}
                                     else if field.type == "File"

@@ -86,7 +86,7 @@ router.post('/submitform', function(req, res) {
                             var fieldNames = Helpers.extractProperty(formObject.fields, "name");
                             var changed = false;
                             for (var i = 0; i < fieldNames.length; i++)
-                                if(headerRow.indexOf(fieldNames[i])==-1){
+                                if(formObject.fields[i].type.toLowerCase()!='file' && headerRow.indexOf(fieldNames[i])==-1){
                                     changed = true;
                                     headerRow.push(fieldNames[i]);
                                 }
@@ -125,12 +125,19 @@ router.post('/submitform', function(req, res) {
             else {//else if im creating a form
                 var initialPromises = [];    
                 var createFormFolderPromise = new Promise(function (resolve, reject){
-                    console.log('gonna createFormFolderPromise')
+                    console.log('gonna createFormFolderPromise');
                     GDriveHelpers.createFile("Recruitment - "+form.title, "folder", driveService, null, resolve, reject);
                 });
                 var createSpreadSheetPromise  = new Promise(function (resolve, reject){
-                    console.log('gonna createSpreadSheetPromise')
-                    GDriveHelpers.createFile("Recruitment - "+form.title, "spreadsheet", driveService, null, resolve, reject, Helpers.createCSVHeader(form.fields));
+                    console.log('gonna createSpreadSheetPromise');
+                    var fieldNames = [];
+                    for (var i = 0; i < form.fields.length; i++) {
+                        if(form.fields[i].type.toLowerCase()!="file"){
+                            fieldNames.push(form.fields[i].name);
+                        }
+                    }
+                    var headers = fieldNames.join(",");
+                    GDriveHelpers.createFile("Recruitment - "+form.title, "spreadsheet", driveService, null, resolve, reject, headers);
                 });
                 initialPromises.push(createFormFolderPromise);
                 initialPromises.push(createSpreadSheetPromise);

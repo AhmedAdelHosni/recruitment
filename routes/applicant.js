@@ -106,7 +106,14 @@ router.post('/applicantsubmit', function(req, res) {
                         console.log('PROMISE START3: insert in spreadsheet')
                         var doc = new GoogleSpreadsheet(form.sheetsId, user.accessToken);
                         var creds = require('../auth.json');
-                        GDriveHelpers.insertInSpreadSheet(Helpers.extractProperty(form.fields, "name"), req.body, doc, creds, resolve, reject);
+
+                        var fieldsNames = [];
+                        for (var i = 0; i < form.fields.length; i++) {
+                            if(form.fields[i].type.toLowerCase()!="file"){
+                                fieldsNames.push(form.fields[i].name);
+                            }
+                        }
+                        GDriveHelpers.insertInSpreadSheet(fieldsNames, req.body, doc, creds, resolve, reject);
                     });
                     var sendEmailToApplicantPromise = new Promise(function (resolve, reject){
                         console.log('PROMISE START4: email to applicant')

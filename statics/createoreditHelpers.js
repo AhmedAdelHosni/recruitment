@@ -90,10 +90,6 @@ $(document).on("click", "#addFieldBtn", function(){
 $(document).on("click", ".removeField", function(){
     var index = extractIndex($(this).prop('id'));
     $("#field-"+index+"-").remove();
-    for (var i = index + 1; i <= currentFieldIndex; i++) {
-        document.body.innerHTML = replaceAll(document.body.innerHTML,"-"+i+"-","-"+(i-1)+"-");
-    }
-    currentFieldIndex--;
 });
 
 function constructData() {
@@ -112,6 +108,9 @@ function constructData() {
     //get all fields
     var fields = [];
     for (var i = 1; i <= currentFieldIndex ; i++) {
+        if($("#name-"+i+"-").val() == undefined){//removed field
+          continue;
+        }
         var field = {
             name : $("#name-"+i+"-").val(),
             type : $("#type-"+i+"-").val(),
@@ -146,7 +145,7 @@ function submitData(data) {
     data: data,
     success: function(ret){
       if(ret.success){
-        alert("Form has been updates successfully.");
+        alert("Form has been updated successfully.");
         window.location = "/edit?id="+ret.formId;
       }
       else

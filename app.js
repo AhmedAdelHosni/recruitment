@@ -47,7 +47,7 @@ app.use(function (req, res) {
 });
 
 
-PORT = 8080;
+PORT = config.get('PORT');
 var server = app.listen(PORT, function () {
   var port = server.address().port;
 
