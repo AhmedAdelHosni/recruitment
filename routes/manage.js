@@ -1,10 +1,10 @@
-var express = require('express');
-var router = express.Router();
-var config = require('../config');
-var oauth2 = require('../modules/oauth2');
-var UserSchema = require('../models/User');
-var FormSchema = require('../models/Form');
-var ObjectID = require('mongodb').ObjectID;
+var express = require('express'),
+    router = express.Router(),
+    config = require('../config'),
+    oauth2 = require('../modules/oauth2'),
+    UserSchema = require('../models/User'),
+    FormSchema = require('../models/Form'),
+    ObjectID = require('mongodb').ObjectID;
 
 
 router.use(oauth2.required);
@@ -26,7 +26,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/create', function(req, res) {
-    res.render('createormodify.jade', {title: "jCreate New Form", action: "create"});
+    res.render('createormodify.jade', {title: "Create New Form", action: "create"});
 });
 
 router.get('/edit', function(req, res) {

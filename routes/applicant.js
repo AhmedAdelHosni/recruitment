@@ -1,17 +1,18 @@
-var express = require('express');
-var router = express.Router();
-var config = require('../config');
-var oauth2 = require('../modules/oauth2');
-var UserSchema = require('../models/User');
-var FormSchema = require('../models/Form');
-var ObjectID = require('mongodb').ObjectID;
-var Promise = require('promise');
-var fs = require('fs');
-var google = require('googleapis');
-var googleAuth = require('google-auth-library');
-var mime = require('mime');
-var Refresh = require('passport-oauth2-refresh');
-var GoogleSpreadsheet = require('google-spreadsheet');
+var express = require('express'),
+    router = express.Router(),
+    config = require('../config'),
+    oauth2 = require('../modules/oauth2'),
+    UserSchema = require('../models/User'),
+    FormSchema = require('../models/Form'),
+    ObjectID = require('mongodb').ObjectID,
+    Promise = require('promise'),
+    fs = require('fs'),
+    mime = require('mime'),
+    Refresh = require('passport-oauth2-refresh'),
+    google = require('googleapis'),
+    googleAuth = require('google-auth-library'),
+    GoogleSpreadsheet = require('google-spreadsheet'),
+    GDriveHelpers = require('../modules/GDriveHelpers');
 
 
 router.get('/view', function(req, res) {
@@ -22,156 +23,6 @@ router.get('/view', function(req, res) {
         });
     });
 });
-
-
-function shareSpreadSheet(driveService, sheetsId, callback) {
-    var email = require('../auth.json').client_email;
-    driveService.permissions.create({
-        resource: {
-            'type': 'user',
-            'role': 'writer',
-            'emailAddress': email
-        },
-        fileId: sheetsId,
-        fields: 'id',
-    }, callback);
-}
-
-function insertInSpreadSheet(fieldNames, formData, sheetsId, sheetsService, accessToken, resolve, reject) {
-    var row = {}
-    for(var i = 0; i < fieldNames.length; i++){
-        row[fieldNames[i]] = formData[fieldNames[i]] || "";
-    }
-    var doc = new GoogleSpreadsheet(sheetsId, accessToken);
-    var creds = require('../auth.json');
-    doc.useServiceAccountAuth(creds, function(err, res){
-        doc.addRow(1, row , function(err, res){
-            console.log("PROMISE END: insertInSpreadSheet");
-            if(err){
-                reject(err);
-                return;
-            }
-            else
-                resolve(true);
-        });
-    });
-}
-
-function createFile(fileName, mimeType, driveService, parentsIds, resolve, reject, lineToInsert) {
-    var mimeTypes = {
-        "folder": 'application/vnd.google-apps.folder',
-        "spreadsheet": 'application/vnd.google-apps.spreadsheet'
-    }
-    var fileMetaData = {
-        'name' : fileName,
-        'mimeType' : mimeTypes[mimeType],
-    };
-    if(parentsIds != null)
-        fileMetadata.parents = parentsIds;
-
-    var params = {
-        resource: fileMetaData,
-        fields: "id"
-    };
-    if(mimeType == "spreadsheet" && lineToInsert){
-        params.media = {
-            mimeType: 'text/csv',
-            body: lineToInsert
-        }    
-    }
-    
-    driveService.files.create(params,
-    function(err, file) {
-        console.log("PROMISE END: I create file/folder, file.id="+file.id);
-        if(err){
-            reject(err);
-            return;
-        }
-        resolve(file.id);
-    });
-
-}
-
-function createDoc(fields, formData, driveService, parentsIds, resolve, reject) {
-    var body = "\
-    <body> \
-        <h2 style='text-align:center;'> "+formData['First Name']+" "+formData["Last Name"]+"</h2> \
-        <table style='border: solid;'> ";
-    for (var i = 0; i < fields.length; i++) {
-        if(fields[i].type.toLowerCase()=="file") continue;
-        if(fields[i].name.toLowerCase()=="first name"||fields[i].name.toLowerCase()=="last name") continue;
-        body+="<tr style='padding: 10px;'> \
-                <td> "+fields[i].name+"</td> \
-                <td> "+formData[fields[i].name]+"</td> \
-            </tr>";
-    }
-    body+="</table></body>";
-
-    var fileMetaData = {
-        'name' : formData['First Name'] + ' ' + formData['Last Name'],
-        'mimeType': 'application/vnd.google-apps.document',
-        parents: parentsIds,
-    };
-
-    var media = {
-        mimeType: 'text/html',
-        body: body
-    }
-    driveService.files.create({
-        resource: fileMetaData,
-        fields: "id",
-        media: media
-    },
-    function(err, file) {
-        console.log("PROMISE END: I create doc, file.id="+file.id);
-        if(err){
-            reject(err);
-            return;
-        }
-        resolve(true);
-    });
-}
-
-function uploadFile(name, path, driveService, parentsIds, resolve, reject) {
-    var fileMetadata = {
-        'name': name,
-        parents: parentsIds,
-    };
-    var media = {
-        mimeType: mime.lookup(name),
-        body: fs.createReadStream(path)
-    };
-    driveService.files.create({
-       resource: fileMetadata,
-       media: media,
-       fields: 'id'
-    },
-    function(err, file) {
-        console.log("END SUB PROMISE: upload file, have file.id="+file.id);
-        if(err){
-            reject(err);
-            return;
-        }
-        resolve(file.id);
-    });
-}
-
-function uploadFiles(files, driveService, parentsIds, resolve, reject) {
-    var allFilesPromises = [];
-    for (var i = files.length - 1; i >= 0; i--) {
-
-        var filePromise = new Promise(function (resolve, reject){
-            uploadFile(files[i].originalname,files[i].path, driveService, parentsIds, resolve, reject);
-        }); //end promise
-
-        allFilesPromises.push(filePromise);
-    }
-
-    Promise.all(allFilesPromises).then(function (allFilesResponses){
-        console.log("PROMISE END: UPLOAD FILES");
-        resolve(allFilesResponses);
-    });
-}
 
 function extractNames(fields) {
     var names = []
@@ -192,7 +43,7 @@ function has(form,field){
     return false;
 }
 
-function sendMessage(gmailService, fromName, to, from, subject, body, resolve, reject) {
+function sendEmail(gmailService, fromName, to, from, subject, body, resolve, reject) {
     var email_lines = []
     email_lines.push('From: "'+fromName+'" <'+from+'>');
     email_lines.push('To: '+to);
@@ -205,7 +56,7 @@ function sendMessage(gmailService, fromName, to, from, subject, body, resolve, r
 
     var raw = new Buffer(email).toString('base64');
     raw = raw.replace(/\+/g, '-').replace(/\//g, '_');
-    
+
     gmailService.users.messages.send({
         userId: 'me',
         resource: {
@@ -228,19 +79,18 @@ router.post('/applicantsubmit', function(req, res) {
     UserSchema.findOne({forms: ObjectID(req.body.id)}).exec(function(err, user){
         console.log("found user");
         console.log("--------------------");
-        var refreshToken = user.refreshToken;
-        var driveService = google.drive('v3');
-        var sheetsService = google.sheets('v4');
-        var gmailService = google.gmail('v1');
-        var auth = new googleAuth();
-        Refresh.requestNewAccessToken('google', refreshToken, function(err, access_token){
-            var accessToken = access_token;
+        var driveService = google.drive('v3'),
+            sheetsService = google.sheets('v4'),
+            gmailService = google.gmail('v1'),
+            auth = new googleAuth();
+
+        Refresh.requestNewAccessToken('google', user.refreshToken, function(err, access_token){
             user.accessToken = access_token;
             user.save();
             var oauth2Client = new auth.OAuth2(config.get('OAUTH2_CLIENT_ID'),config.get('OAUTH2_CLIENT_SECRET'),config.get('OAUTH2_CALLBACK'));
             oauth2Client.credentials = {
-                access_token: accessToken,
-                refresh_token: refreshToken
+                access_token: user.accessToken,
+                refresh_token: user.refreshToken
             };
             google.options({ auth: oauth2Client }); // set auth as a global default
             FormSchema.findById(req.body.id).exec(function(err, form){
@@ -254,7 +104,7 @@ router.post('/applicantsubmit', function(req, res) {
                     console.log("pushing createFormFolderPromise");
                     var createFormFolderPromise = new Promise(function (resolve, reject){
                         console.log('gonna createFormFolderPromise')
-                        createFile("Recruitment - "+form.title, "folder", driveService, null, resolve, reject);
+                        GDriveHelpers.createFile("Recruitment - "+form.title, "folder", driveService, null, resolve, reject);
                     });
                     initialPromises.push(createFormFolderPromise);
                 }
@@ -262,7 +112,7 @@ router.post('/applicantsubmit', function(req, res) {
                     console.log("pushing createSpreadSheetPromise")
                     var createSpreadSheetPromise  = new Promise(function (resolve, reject){
                         console.log('gonna createSpreadSheetPromise')
-                        createFile("Recruitment - "+form.title, "spreadsheet", driveService, null, resolve, reject, createCSVHeader(form.fields));
+                        GDriveHelpers.createFile("Recruitment - "+form.title, "spreadsheet", driveService, null, resolve, reject, createCSVHeader(form.fields));
                     });
 
                     initialPromises.push(createSpreadSheetPromise);
@@ -283,32 +133,33 @@ router.post('/applicantsubmit', function(req, res) {
                     }
                     form.save();
                     console.log("gonna share spreadsheet");
-                    shareSpreadSheet(driveService, form.sheetsId, function(err, res){
+                    GDriveHelpers.shareFile(driveService, form.sheetsId, function(err, response){
                         console.log("now im calling all the other promises");
 
                         var createApplicantFolderPromise = new Promise(function (resolve, reject){
                             console.log('PROMISE START: createApplicantFolderPromise')
-                            createFile(req.body['First Name']+" "+req.body['Last Name'], "folder", driveService, [form.folderId], resolve, reject);
+                            GDriveHelpers.createFile(req.body['First Name']+" "+req.body['Last Name'], "folder", driveService, [form.folderId], resolve, reject);
                         });
 
                         Promise.all([createApplicantFolderPromise]).then(function (allResponses){ 
                             var applicantFolderId = allResponses[0];
 
                             var createDocPromise = new Promise(function (resolve, reject){
-                                console.log('PROMISE START: createDocPromise')
-                                createDoc(form.fields, req.body, driveService, [applicantFolderId], resolve, reject);
+                                console.log('PROMISE START1: createDocPromise')
+                                GDriveHelpers.createDoc(form.fields, req.body, driveService, [applicantFolderId], resolve, reject);
                             });
                             var uploadFilesPromise = new Promise(function (resolve, reject){
-                                console.log('PROMISE START: uploadFilesPromise')
-                                uploadFiles(req.files, driveService, [applicantFolderId], resolve, reject);
+                                console.log('PROMISE START2: uploadFilesPromise')
+                                GDriveHelpers.uploadFiles(req.files, driveService, [applicantFolderId], resolve, reject);
                             });
                             var insertInSpreadSheetPromise = new Promise(function (resolve, reject){
-                                console.log('PROMISE START: insert in spreadsheet')
-                                var myGoogleSpreadsheet = new GoogleSpreadsheet(form.sheetsId, accessToken);
-                                insertInSpreadSheet(extractNames(form.fields), req.body, form.sheetsId, sheetsService, accessToken, resolve, reject);
+                                console.log('PROMISE START3: insert in spreadsheet')
+                                var doc = new GoogleSpreadsheet(form.sheetsId, user.accessToken);
+                                var creds = require('../auth.json');
+                                GDriveHelpers.insertInSpreadSheet(extractNames(form.fields), req.body, doc, creds, resolve, reject);
                             });
                             var sendEmailToApplicantPromise = new Promise(function (resolve, reject){
-                                console.log('PROMISE START: email to applicant')
+                                console.log('PROMISE START4: email to applicant')
                                 var subject = "Your Application has been received";
                                 var body="<p>Dear "+req.body['First Name']+",</p>"+
                                          "<p>" + form.companyName + " has received your application and it's being reviewed.<br/>"+
@@ -316,29 +167,30 @@ router.post('/applicantsubmit', function(req, res) {
                                 if(has(form,"companyBannerUrl"))
                                     body+="<img style='display:block;' src='" + form.companyBannerUrl + "'></img>";
 
-                                sendMessage(gmailService, form.companyName, req.body.Email, user.email, subject, body, resolve, reject);
+                                sendEmail(gmailService, form.companyName, req.body.Email, user.email, subject, body, resolve, reject);
                             });
                             var sendEmailToRecruiterPromise = new Promise(function (resolve, reject){
-                                console.log('PROMISE START: email to recruiter')
+                                console.log('PROMISE START5: email to recruiter')
                                 var subject = "A new job application has been received";
-                                var folderLink = 'https://drive.google.com/drive/folders/'+form.folderId;
+                                var folderLink = 'https://drive.google.com/drive/folders/'+applicantFolderId;
                                 var body="<p>Dear "+ user.name + ",</p>"+
                                     "<p>" + form.companyName + " has received a new job application and it's waiting for your review.<br/>"+
                                     "<b>Applicant Name</b>: "+req.body['First Name']+" "+req.body['Last Name']+"<br />"+
                                     "<b>Applying for</b>: "+form.title+"<br />"+
                                     "Link to his Drive folder: "+folderLink+"<br />";
 
-                                sendMessage(gmailService, form.companyName, form.recruiterEmail, user.email, subject, body, resolve, reject);
+                                sendEmail(gmailService, form.companyName, form.recruiterEmail, user.email, subject, body, resolve, reject);
                             });
 
 
                             Promise.all([
                                     uploadFilesPromise,
                                     createDocPromise,
-                                    insertInSpreadSheetPromise,
+                                    insertInSpreadSheetPromise,  
                                     sendEmailToApplicantPromise,
                                     sendEmailToRecruiterPromise,
-                                ]).then(function (allResponses){
+                                ]).
+                                then(function (allResponses){
                                     console.log("otherPromises");
                                     console.log(allResponses);
                                     console.log("---------");
@@ -346,7 +198,6 @@ router.post('/applicantsubmit', function(req, res) {
                                         title: 'Form Submitted',
                                         form: form
                                     });
-
                                 }
                             );//end createApplicantFolderPromise, createDocPromise, uploadFilesPromise
                         }); //end create applicant promise
