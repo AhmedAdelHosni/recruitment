@@ -1,5 +1,4 @@
-var Promise = require('promise'),
-    GoogleSpreadsheet = require('google-spreadsheet');
+var Promise = require('promise');
 
 function shareFile(driveService, fileId, callback) {
     var email = require('../auth.json').client_email;
@@ -14,6 +13,9 @@ function shareFile(driveService, fileId, callback) {
     }, callback);
 }
 
+/* 
+doc: GoogleSpreadsheet object
+*/
 function insertInSpreadSheet(fieldNames, formData, doc, creds, resolve, reject) {
     var row = {}
     for(var i = 0; i < fieldNames.length; i++){

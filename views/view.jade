@@ -14,11 +14,11 @@ html(lang="en")
     body
         .container
             if form.companyBannerUrl
-                img(href="#{form.companyBannerUrl}")
+                img.img-responsive.center-block(src="#{form.companyBannerUrl}",style="height:350px;max-width:1000px;")
 
             h2 #{form.companyName} - #{form.title}
-
             p #{form.description}
+
             br
             br
             hr

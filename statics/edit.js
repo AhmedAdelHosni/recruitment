@@ -10,7 +10,7 @@ $(document).ready(function(){
         $("#title").val(form.title);
         $("#companyName").val(form.companyName);
         $("#description").val(form.description);
-        $("#bannerUrl").val(form.bannerUrl);
+        $("#companyBannerUrl").val(form.companyBannerUrl);
         $("#recruiterEmail").val(form.recruiterEmail);
 
         for (var i = 1 ; i <= form.fields.length; i++) {

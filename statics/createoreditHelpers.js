@@ -100,17 +100,16 @@ function constructData() {
   var data = {
         title: $("#title").val(),
         companyName: $("#companyName").val(),
+        companyBannerUrl: $("#companyBannerUrl").val(),
         description: $("#description").val(),
         bannerUrl: $("#bannerUrl").val(),
         recruiterEmail: $("#recruiterEmail").val()
     };
 
-    if(getUrlParameter("id")){
-      console.log("got id="+getUrlParameter("id"))
+    if(getUrlParameter("id"))
       data.id = getUrlParameter("id");
-    }
-    console.log("id=");console.log(getUrlParameter("id"));
 
+    //get all fields
     var fields = [];
     for (var i = 1; i <= currentFieldIndex ; i++) {
         var field = {
@@ -126,7 +125,6 @@ function constructData() {
           for (var j = field.options.length - 1; j >= 0; j--)
             field.options[j] = $.trim(field.options[j]);
         }
-
         fields.push(field);
     }
 
