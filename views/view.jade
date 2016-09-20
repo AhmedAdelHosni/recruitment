@@ -59,9 +59,7 @@ html(lang="en")
                                             - for (var k = 0; k < field.options.length; k++)
                                                 option #{field.options[k]}
                                     else if field.type == "File"
-                                        - for( var k = 0; k < field.options.length; k++)
-                                            - field.options[k] = (field.options[k][0]!="."?".":"")+field.options[k]
-                                        input.form-control(type="#{field.type}",name="#{field.name}",id="#{field.name}",required,accept="#{field.options.join(',')}")
+                                        input.form-control(type="#{field.type}",name="#{field.name}",id="#{field.name}",required,accept="#{field.fileOptions}")
                                     else
                                         input.form-control(type="#{field.type}",name="#{field.name}",id="#{field.name}",required)
                                 else
@@ -70,9 +68,7 @@ html(lang="en")
                                             - for (var k = 0; k < field.options.length; k++)
                                                 option #{field.options[k]}
                                     else if field.type == "File"
-                                        - for( var k = 0; k < field.options.length; k++)
-                                            - field.options[k] = (field.options[k][0]!="."?".":"")+field.options[k]
-                                        input.form-control(type="#{field.type}",name="#{field.name}",id="#{field.name}",accept="#{field.options.join(',')}")
+                                        input.form-control(type="#{field.type}",name="#{field.name}",id="#{field.name}",accept="#{field.fileOptions}")
                                     else
                                         input.form-control(type="#{field.type}",name="#{field.name}",id="#{field.name}")
                 button.btn.btn-primary(type="submit",id="submit") Submit

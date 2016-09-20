@@ -18,6 +18,17 @@ var express = require('express'),
 
 router.get('/view', function(req, res) {
     FormSchema.findById(req.query.id).exec(function(err, form) {
+        for (var i = form.fields.length - 1; i >= 0; i--) {
+            if(form.fields[i].type != 'File')
+                continue;
+
+            var mimeTypes = [];
+            var extensions = form.fields[i].options;
+            for (var j = extensions.length - 1; j >= 0; j--) {
+                mimeTypes.push(mime.lookup(extensions[j]));
+            }
+            form.fields[i].fileOptions = mimeTypes.join(',');
+        }
         res.render('view.jade', {
             title: form.title,
             form: form
