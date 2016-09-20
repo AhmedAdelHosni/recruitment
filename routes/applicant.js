@@ -56,12 +56,14 @@ function sendEmail(gmailService, fromName, to, from, subject, body, resolve, rej
             raw: raw
         }
     }, function(err, res) {
-        console.log("PROMISE END: SEND MESSAGE");
+        console.log("PROMISE END: SEND EMAIL err=");
+        console.log(err);
         if(err){
             reject(err);
             return;
         }
         resolve(true);
+        console.log("resolving now: SEND EMAIL")
     });
 }
 
@@ -163,7 +165,7 @@ router.post('/applicantsubmit', function(req, res) {
                         console.log("---------");
                         res.render('submitted.jade', {
                             title: 'Form Submitted',
-                            form: form
+                            text: "Your form has been submitted successfuly."
                         });
                     });//end createApplicantFolderPromise, createDocPromise, uploadFilesPromise
                 }); //end create applicant promise

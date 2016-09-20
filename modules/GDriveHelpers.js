@@ -27,12 +27,14 @@ function insertInSpreadSheet(fieldNames, formData, doc, creds, folderLink, resol
     doc.useServiceAccountAuth(creds, function(err, res){
         doc.addRow(1, row , function(err, res){
             console.log("PROMISE END: insertInSpreadSheet err=");
+            console.log(err);
             if(err){
                 reject(err);
                 return;
             }
             else{
                 resolve(true);
+                console.log("resolving now insertInSpreadSheet");
             }
         });
     });
@@ -62,12 +64,15 @@ function createFile(fileName, mimeType, driveService, parentsIds, resolve, rejec
     
     driveService.files.create(params,
     function(err, file) {
-        console.log("PROMISE END: I create file/folder, file.id="+file.id);
+        console.log("PROMISE END: I create file/folder, file.id=" + file.id + "err=");
+        console.log(err);
         if(err){
             reject(err);
             return;
         }
+        
         resolve(file.id);
+        console.log("resolving now I create file/folder");
     });
 
 }
@@ -106,12 +111,15 @@ function createDoc(fields, formData, driveService, parentsIds, resolve, reject) 
         media: media
     },
     function(err, file) {
-        console.log("PROMISE END: I create doc, file.id="+file.id);
+        console.log("PROMISE END: I create doc, file.id="+file.id+"err = ");
+        console.log(err);
         if(err){
             reject(err);
             return;
         }
+        
         resolve(true);
+        console.log("resolving now I create doc");
     });
 }
 
@@ -130,12 +138,15 @@ function uploadFile(name, path, driveService, parentsIds, resolve, reject) {
        fields: 'id'
     },
     function(err, file) {
-        console.log("END SUB PROMISE: upload file, have file.id="+file.id);
+        console.log("END SUB PROMISE: upload file, have file.id="+file.id+"err=");
+        console.log(err);
         if(err){
             reject(err);
             return;
         }
+        
         resolve(file.id);
+        console.log("resolving now upload file");
     });
 }
 
@@ -150,7 +161,10 @@ function uploadFiles(files, driveService, parentsIds, resolve, reject) {
 
     Promise.all(allFilesPromises).then(function (allFilesResponses){
         console.log("PROMISE END: UPLOAD FILES responses=");
+        console.log(allFilesResponses);
+        
         resolve(allFilesResponses);
+        console.log("resolving now uploadFiles");
     });
 }
 

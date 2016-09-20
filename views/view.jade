@@ -26,6 +26,12 @@ html(lang="en")
                             return false;  
                         }
                     }//end for loop over fields
+                $(".fileinput").each(function(index){
+                    if($(this)[0].files[0].size>10*1024*1024){
+                        alert("File limit is 10 MB");
+                        return false;
+                    }
+                });
             });//end onclick
     body
         .container
@@ -59,7 +65,7 @@ html(lang="en")
                                             - for (var k = 0; k < field.options.length; k++)
                                                 option #{field.options[k]}
                                     else if field.type == "File"
-                                        input.form-control(type="#{field.type}",name="#{field.name}",id="#{field.name}",required,accept="#{field.fileOptions}")
+                                        input.form-control.fileinput(type="file",name="#{field.name}",id="#{field.name}",required,accept="#{field.fileOptions}")
                                     else
                                         input.form-control(type="#{field.type}",name="#{field.name}",id="#{field.name}",required)
                                 else
@@ -68,7 +74,7 @@ html(lang="en")
                                             - for (var k = 0; k < field.options.length; k++)
                                                 option #{field.options[k]}
                                     else if field.type == "File"
-                                        input.form-control(type="#{field.type}",name="#{field.name}",id="#{field.name}",accept="#{field.fileOptions}")
+                                        input.form-control.fileinput(type="file",name="#{field.name}",id="#{field.name}",accept="#{field.fileOptions}")
                                     else
                                         input.form-control(type="#{field.type}",name="#{field.name}",id="#{field.name}")
                 button.btn.btn-primary(type="submit",id="submit") Submit
