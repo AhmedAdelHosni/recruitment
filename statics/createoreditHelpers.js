@@ -97,9 +97,7 @@ function constructData() {
         title: $("#title").val(),
         companyName: $("#companyName").val(),
         companyBannerUrl: $("#companyBannerUrl").val(),
-        description: $("#description").val(),
-        bannerUrl: $("#bannerUrl").val(),
-        recruiterEmail: $("#recruiterEmail").val()
+        description: $("#description").val()
     };
 
     if(getUrlParameter("id"))

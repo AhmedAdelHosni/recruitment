@@ -104,6 +104,7 @@ router.post('/applicantsubmit', function(req, res) {
 
                 Promise.all([createApplicantFolderPromise]).then(function (allResponses){ 
                     var applicantFolderId = allResponses[0];
+                    var folderLink = 'https://drive.google.com/drive/folders/'+applicantFolderId;
 
                     var createDocPromise = new Promise(function (resolve, reject){
                         console.log('PROMISE START1: createDocPromise')
@@ -124,7 +125,7 @@ router.post('/applicantsubmit', function(req, res) {
                                 fieldsNames.push(form.fields[i].name);
                             }
                         }
-                        GDriveHelpers.insertInSpreadSheet(fieldsNames, req.body, doc, creds, resolve, reject);
+                        GDriveHelpers.insertInSpreadSheet(fieldsNames, req.body, doc, creds, folderLink, resolve, reject);
                     });
                     var sendEmailToApplicantPromise = new Promise(function (resolve, reject){
                         console.log('PROMISE START4: email to applicant')
@@ -140,14 +141,13 @@ router.post('/applicantsubmit', function(req, res) {
                     var sendEmailToRecruiterPromise = new Promise(function (resolve, reject){
                         console.log('PROMISE START5: email to recruiter')
                         var subject = "A new job application has been received";
-                        var folderLink = 'https://drive.google.com/drive/folders/'+applicantFolderId;
                         var body="<p>Dear "+ user.name + ",</p>"+
                             "<p>" + form.companyName + " has received a new job application and it's waiting for your review.<br/>"+
                             "<b>Applicant Name</b>: "+req.body['First Name']+" "+req.body['Last Name']+"<br />"+
                             "<b>Applying for</b>: "+form.title+"<br />"+
                             "Link to his Drive folder: "+folderLink+"<br />";
 
-                        sendEmail(gmailService, form.companyName, form.recruiterEmail, user.email, subject, body, resolve, reject);
+                        sendEmail(gmailService, form.companyName, user.email, user.email, subject, body, resolve, reject);
                     });
 
 
@@ -169,11 +169,8 @@ router.post('/applicantsubmit', function(req, res) {
                 }); //end create applicant promise
 
             });//end get form
-
         });//end refresh access token
-
-        
-    });
-});
+    });//end get user
+});//end router.post(/applicantsubmit)
 
 module.exports = router;

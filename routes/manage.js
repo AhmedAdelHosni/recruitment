@@ -45,7 +45,6 @@ router.post('/submitform', function(req, res) {
         title: body.title,
         companyName: body.companyName,
         description: body.description,
-        recruiterEmail: body.recruiterEmail,
         companyBannerUrl: body.companyBannerUrl,
         fields: JSON.parse(body.fields)
     };
@@ -137,6 +136,7 @@ router.post('/submitform', function(req, res) {
                         }
                     }
                     var headers = fieldNames.join(",");
+                    headers+=",folder link";
                     GDriveHelpers.createFile("Recruitment - "+form.title, "spreadsheet", driveService, null, resolve, reject, headers);
                 });
                 initialPromises.push(createFormFolderPromise);
@@ -150,7 +150,6 @@ router.post('/submitform', function(req, res) {
 
                     form.folderId = allResponses[0];
                     form.sheetsId = allResponses[1];
-
 
                     GDriveHelpers.shareFile(driveService, form.sheetsId, function(err, response){
                         form.save(function(err,formSaved){

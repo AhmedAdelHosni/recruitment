@@ -18,14 +18,15 @@ function shareFile(driveService, fileId, callback) {
 /* 
 doc: GoogleSpreadsheet object
 */
-function insertInSpreadSheet(fieldNames, formData, doc, creds, resolve, reject) {
+function insertInSpreadSheet(fieldNames, formData, doc, creds, folderLink, resolve, reject) {
     var row = {}
     for(var i = 0; i < fieldNames.length; i++){
         row[fieldNames[i]] = formData[fieldNames[i]] || "";
     }
+    row["folder link"] = folderLink;
     doc.useServiceAccountAuth(creds, function(err, res){
         doc.addRow(1, row , function(err, res){
-            console.log("PROMISE END: insertInSpreadSheet");
+            console.log("PROMISE END: insertInSpreadSheet err=");
             if(err){
                 reject(err);
                 return;
@@ -148,7 +149,7 @@ function uploadFiles(files, driveService, parentsIds, resolve, reject) {
     }
 
     Promise.all(allFilesPromises).then(function (allFilesResponses){
-        console.log("PROMISE END: UPLOAD FILES");
+        console.log("PROMISE END: UPLOAD FILES responses=");
         resolve(allFilesResponses);
     });
 }

@@ -11,7 +11,6 @@ $(document).ready(function(){
         $("#companyName").val(form.companyName);
         $("#description").val(form.description);
         $("#companyBannerUrl").val(form.companyBannerUrl);
-        $("#recruiterEmail").val(form.recruiterEmail);
 
         for (var i = 1 ; i <= form.fields.length; i++) {
           addField();
