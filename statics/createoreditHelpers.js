@@ -3,13 +3,13 @@ var currentFieldIndex = 0;
 var field =// change id,name,for
 '<div id="field--" style="border: 2px;border-style: dotted;padding: 10px;margin: 8px;" class="container"> \
    <div class="form-group row"> \
-      <label for="name--" class="col-sm-2 col-form-label">Field Name:</label> \
+      <label for="name--" class="col-sm-2 col-form-label">Field Name*:</label> \
       <div class="col-sm-3"> \
         <input type="text" name="name--" id="name--" class="form-control" pattern="[a-zA-Z0-9 ]+" required> \
         <small class="form-text text-muted" >Only letters, numbers and spaces allowed</small> \
       </div> \
       \
-      <label for="type--" class="col-sm-2 col-form-label">Field Type:</label> \
+      <label for="type--" class="col-sm-2 col-form-label">Field Type*:</label> \
       <div class="col-sm-3"> \
          <select class="form-control typeselect" name="type--" id="type--" required> \
             <option selected>Text</option> \
@@ -23,7 +23,7 @@ var field =// change id,name,for
       <div class="col-sm-2"><button id="remove--" type="button" class="btn btn-danger removeField">Remove Field</button></div> \
    </div> \
    <div class="form-group row"> \
-      <label for="isRequired--" class="col-sm-2 col-form-label">Required:</label> \
+      <label for="isRequired--" class="col-sm-2 col-form-label">Required*:</label> \
       <label class="form-check-inline col-sm-2"> \
          <input type="radio" name="isRequired--" id="isRequired--yes" value="yes" checked class="form-check-input"> &nbsp;&nbsp;Yes \
       </label> \
@@ -33,7 +33,7 @@ var field =// change id,name,for
       </label> \
       \
       <div id="optionsdiv--" style="display: none;">\
-        <label for="options--" class="col-sm-2 col-form-label">Options:</label> \
+        <label for="options--" class="col-sm-2 col-form-label">Options*:</label> \
         <div class="col-sm-3"> \
          <input type="text" name="options--" id="options--" class="form-control" placeholder="E.g: option1,option2"> \
          <small class="form-text text-muted" id="optionshelp--">Help Text</small> \
@@ -155,11 +155,25 @@ function submitData(data) {
 }
 
 $(document).on("click", "#submit", function(event){
-    fields = $('input,textarea,select').filter('[required]:visible');
+    var fields = $('input,textarea,select').filter('[required]:visible');
     var flag = false;
-    for (var i = fields.length - 1; i >= 0; i--) 
-        if( $(fields[i]).is(':invalid') )
-            return;
+    var is_safari = navigator.userAgent.indexOf("Safari") > -1;
+    if(is_safari)
+        for (var i = fields.length - 1; i >= 0; i--) {
+            if( $(fields[i]).val()=='' ){
+                alert("please fill out field field '"+$(fields[i]).prop('name')+"'.");
+                return false;
+            }
+            if( $(fields[i]).is(':invalid') ){
+                alert("please correct field '"+$(fields[i]).prop('name')+"'.");
+                return false;  
+            }
+        }
+    else 
+        for (var i = fields.length - 1; i >= 0; i--)  
+            if($(fields[i]).is(':invalid'))
+              return ;
+
 
     var data = constructData();
 

@@ -11,6 +11,22 @@ html(lang="en")
             $(document).ready(function(){
                 $("#id").val(getUrlParameter("id"));
             });
+            $(document).on("click", "#submit", function(event){
+                var fields = $('input,textarea,select').filter('[required]:visible');
+                var flag = false;
+                var is_safari = navigator.userAgent.indexOf("Safari") > -1;
+                if(is_safari)
+                    for (var i = fields.length - 1; i >= 0; i--) {
+                        if( $(fields[i]).val()=='' ){
+                            alert("please fill out field field '"+$(fields[i]).prop('name')+"'.");
+                            return false;
+                        }
+                        if( $(fields[i]).is(':invalid') ){
+                            alert("please correct field '"+$(fields[i]).prop('name')+"'.");
+                            return false;  
+                        }
+                    }//end for loop over fields
+            });//end onclick
     body
         .container
             if form.companyBannerUrl
