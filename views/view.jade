@@ -87,3 +87,5 @@ html(lang="en")
                                     else
                                         input.form-control(type="#{field.type}",name="#{field.name}",id="#{field.name}")
                 button.btn.btn-primary(type="submit",id="submit") Submit
+            if form.emailImageUrl
+                img.img-responsive.center-block(src="#{form.emailImageUrl}",style="height:350px;max-width:1000px;")

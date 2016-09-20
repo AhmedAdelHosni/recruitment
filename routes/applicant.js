@@ -121,11 +121,11 @@ router.post('/applicantsubmit', function(req, res) {
                     var sendEmailToApplicantPromise = new Promise(function (resolve, reject){
                         console.log('PROMISE START4: email to applicant')
                         var subject = "Your Application has been received";
-                        var body="<p>Dear "+req.body['First Name']+",</p>"+
-                                 "<p>" + form.companyName + " has received your application and it's being reviewed.<br/>"+
-                                 "We'll contact you to let you know the next step</p>";
-                        if(Helpers.has(form,"companyBannerUrl"))
-                            body+="<img style='display:block;' src='" + form.companyBannerUrl + "'></img>";
+                        var body="<p>"+form.emailFields[0]+" "+req.body['First Name']+",</p>"+
+                                 "<p>" + form.companyName + " " + form.emailFields[1]+"<br/>"+
+                                 form.emailFields[2].replace(/\n/g, '<br>')+"</p>";
+                        if(Helpers.has(form,"emailImageUrl"))
+                            body+="<img style='display:block;' src='" + form.emailImageUrl + "'></img>";
 
                         sendEmail(gmailService, form.companyName, req.body.Email, user.email, subject, body, resolve, reject);
                     });

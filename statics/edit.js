@@ -11,6 +11,7 @@ $(document).ready(function(){
         $("#companyName").val(form.companyName);
         $("#description").val(form.description);
         $("#companyBannerUrl").val(form.companyBannerUrl);
+        $("#emailImageUrl").val(form.emailImageUrl);
 
         for (var i = 1 ; i <= form.fields.length; i++) {
           addField();
@@ -23,6 +24,10 @@ $(document).ready(function(){
           else
             $("input[name=isRequired-"+i+"-][value=no]").prop("checked",true);
           $("#options-"+i+"-").val(field.options.join(","));
+        }
+
+        for (var i = 1; i<= form.emailFields.length; i++){
+          $("#email"+i).val(form.emailFields[i-1]);
         }
 
         $("#name-1-, #name-2-,#name-3-").prop("disabled",true);

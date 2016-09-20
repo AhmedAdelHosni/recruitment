@@ -97,7 +97,8 @@ function constructData() {
         title: $("#title").val(),
         companyName: $("#companyName").val(),
         companyBannerUrl: $("#companyBannerUrl").val(),
-        description: $("#description").val()
+        description: $("#description").val(),
+        emailImageUrl: $("#emailImageUrl").val()
     };
 
     if(getUrlParameter("id"))
@@ -124,6 +125,10 @@ function constructData() {
         }
         fields.push(field);
     }
+    var emailFields = [];
+    for (var i = 0; i< 3; i++){
+        emailFields.push($("#email"+(i+1)).val());
+    }
 
     for (var i = fields.length - 1; i >= 0; i--)
       for (var j = i - 1; j >= 0; j--)
@@ -131,6 +136,7 @@ function constructData() {
           return false;
 
     data.fields = JSON.stringify(fields);
+    data.emailFields = JSON.stringify(emailFields);
     return data;
 }
 

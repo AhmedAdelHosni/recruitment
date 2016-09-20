@@ -40,6 +40,28 @@ block content
         hr
         h2 Applicant Confirmation Email:
         br
+        .container
+            .form-group.row
+                .col-sm-1
+                    input.form-control(type="text",id="email1",value="Dear")
+                .col-sm-2
+                    input.form-control(type="text",value="First Name", disabled)
+            br
+            .form-group.row
+                .col-sm-3
+                    input.form-control(type="text",value="Company Name", disabled)
+                .col-sm-6
+                    input.form-control(type="text",id="email2",value="has received your application and it's being reviewed.")
+            br
+            .form-group.row
+                .col-sm-6
+                    textarea.form-control(type="text",rows="3",id="email3",value="") We'll contact you to let you know the next step
+            br
+            br
+            .form-group.row
+                label.col-sm-2.col-form-label(for="emailImageUrl") Email Image URL:
+                .col-sm-3
+                    input.form-control(type="text",name="emailImageUrl",id="emailImageUrl")
 
             
 
