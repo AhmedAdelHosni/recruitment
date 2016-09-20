@@ -27,6 +27,13 @@ html(lang="en")
                         }
                     }//end for loop over fields
                 $(".fileinput").each(function(index){
+                    var filename = $(this).val();
+                    var extension = filename.replace(/^.*\./, '');
+                    var allowedExtensions = $(this).prop('accept').split(',');
+                    if(allowedExtensions.indexOf(extension)==-1){
+                        alert("file extension does not conform to allowed types");
+                        return false;
+                    }
                     if($(this)[0].files[0].size>10*1024*1024){
                         alert("File limit is 10 MB");
                         return false;
@@ -65,7 +72,8 @@ html(lang="en")
                                             - for (var k = 0; k < field.options.length; k++)
                                                 option #{field.options[k]}
                                     else if field.type == "File"
-                                        input.form-control.fileinput(type="file",name="#{field.name}",id="#{field.name}",required,accept="#{field.fileOptions}")
+                                        input.form-control.fileinput(type="file",name="#{field.name}",id="#{field.name}",required,accept="#{field.options.join(',')}")
+                                        small.form-text.text-muted Allowed extensions: #{field.options.join(",")}
                                     else
                                         input.form-control(type="#{field.type}",name="#{field.name}",id="#{field.name}",required)
                                 else
@@ -74,7 +82,8 @@ html(lang="en")
                                             - for (var k = 0; k < field.options.length; k++)
                                                 option #{field.options[k]}
                                     else if field.type == "File"
-                                        input.form-control.fileinput(type="file",name="#{field.name}",id="#{field.name}",accept="#{field.fileOptions}")
+                                        input.form-control.fileinput(type="file",name="#{field.name}",id="#{field.name}",accept="#{field.options.join(',')}")
+                                        small.form-text.text-muted Allowed extensions: #{field.options.join(",")}
                                     else
                                         input.form-control(type="#{field.type}",name="#{field.name}",id="#{field.name}")
                 button.btn.btn-primary(type="submit",id="submit") Submit
