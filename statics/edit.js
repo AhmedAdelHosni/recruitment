@@ -12,6 +12,7 @@ $(document).ready(function(){
         $("#description").val(form.description);
         $("#companyBannerUrl").val(form.companyBannerUrl);
         $("#emailImageUrl").val(form.emailImageUrl);
+        $("#bgColor").val(form.bgColor);
 
         for (var i = 1 ; i <= form.fields.length; i++) {
           addField();

@@ -6,6 +6,7 @@ var FormSchema = new Schema({
     companyName: String,
     companyBannerUrl: String,
     emailImageUrl: String,
+    bgColor: String,
     emailFields: { type: Array },
     description: String,
     confirmationEmailForm: String,

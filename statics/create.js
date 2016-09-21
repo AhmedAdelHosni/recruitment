@@ -5,6 +5,7 @@ $(document).ready(function(){
     $("#name-1-").val("First Name");
     $("#name-2-").val("Last Name");
     $("#name-3-").val("Email");
+    $("#bgColor").val("#FFFFFF");
 
     $("#name-1-, #name-2-,#name-3-").prop("disabled",true);
     $("#isRequired-1-no, #isRequired-2-no, #isRequired-3-no").prop("disabled",true);

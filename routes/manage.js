@@ -47,6 +47,7 @@ router.post('/submitform', function(req, res) {
         description: body.description,
         companyBannerUrl: body.companyBannerUrl,
         emailImageUrl: body.emailImageUrl,
+        bgColor: body.bgColor,
         emailFields: JSON.parse(body.emailFields),
         fields: JSON.parse(body.fields)
     };

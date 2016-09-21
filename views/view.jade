@@ -41,7 +41,7 @@ html(lang="en")
                 });
             });//end onclick
     body
-        .container
+        .container(style="background-color: #{form.bgColor};")
             if form.companyBannerUrl
                 img.img-responsive.center-block(src="#{form.companyBannerUrl}",style="height:350px;max-width:1000px;")
 
