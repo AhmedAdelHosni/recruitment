@@ -20,9 +20,9 @@ $(document).ready(function(){
           var field = form.fields[i-1];
           $("#name-"+i+"-").val(field.name);
           $("#type-"+i+"-").val(field.type);
+          $("#type-"+i+"-").change();
           $("#options-"+i+"-").val(field.options.join(","));
           $("#sizelimit-"+i+"-").val(field.sizelimit);
-          $("#type-"+i+"-").change();
 
           if(field.isRequired)
             $("input[name=isRequired-"+i+"-][value=yes]").prop("checked",true);
