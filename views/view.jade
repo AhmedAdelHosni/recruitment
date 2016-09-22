@@ -26,19 +26,21 @@ html(lang="en")
                             return false;  
                         }
                     }//end for loop over fields
-                $(".fileinput").each(function(index){
-                    var filename = $(this).val();
+                var all = $(".fileinput").toArray();
+
+                for(var i=0; i < all.length ; i++) {
+                    var filename = $(all[i]).val();
                     var extension = filename.replace(/^.*\./, '');
-                    var allowedExtensions = $(this).prop('accept').split(',');
+                    var allowedExtensions = $(all[i]).prop('accept').split(',');
                     if(allowedExtensions.indexOf(extension)==-1){
                         alert("file extension does not conform to allowed types");
                         return false;
                     }
-                    if($(this)[0].files[0].size>10*1024*1024){
+                    if($(all[i])[0].files[0].size>10*1024*1024){
                         alert("File limit is 10 MB");
                         return false;
                     }
-                });
+                }
             });//end onclick
     body
         .container(style="background-color: #{form.bgColor};")
