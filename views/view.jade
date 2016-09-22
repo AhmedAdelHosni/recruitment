@@ -29,15 +29,19 @@ html(lang="en")
                 var all = $(".fileinput").toArray();
 
                 for(var i=0; i < all.length ; i++) {
-                    var filename = $(all[i]).val();
+                    var field = $(all[i]);
+                    var sizelimit = parseFloat(field.attr("sizelimit"));
+                    var fieldName = field.attr("name");
+
+                    var filename = field.val();
                     var extension = filename.replace(/^.*\./, '');
-                    var allowedExtensions = $(all[i]).prop('accept').split(',');
+                    var allowedExtensions = field.prop('accept').split(',');
                     if(allowedExtensions.indexOf(extension)==-1){
                         alert("file extension does not conform to allowed types");
                         return false;
                     }
-                    if($(all[i])[0].files[0].size>10*1024*1024){
-                        alert("File limit is 10 MB");
+                    if(field[0].files[0].size>sizelimit*1024*1024){
+                        alert("File limit for "+fieldName+" is "+sizelimit+" MB");
                         return false;
                     }
                 }
@@ -74,8 +78,8 @@ html(lang="en")
                                             - for (var k = 0; k < field.options.length; k++)
                                                 option #{field.options[k]}
                                     else if field.type == "File"
-                                        input.form-control.fileinput(type="file",name="#{field.name}",id="#{field.name}",required,accept="#{field.options.join(',')}")
-                                        small.form-text.text-muted Allowed extensions: #{field.options.join(",")}
+                                        input.form-control.fileinput(type="file",name="#{field.name}",id="#{field.name}",required,accept="#{field.options.join(',')}", sizelimit="#{field.sizelimit}")
+                                        small.form-text.text-muted Allowed extensions: #{field.options.join(",")}. Size limit: #{field.sizelimit} MB
                                     else
                                         input.form-control(type="#{field.type}",name="#{field.name}",id="#{field.name}",required)
                                 else
@@ -84,8 +88,8 @@ html(lang="en")
                                             - for (var k = 0; k < field.options.length; k++)
                                                 option #{field.options[k]}
                                     else if field.type == "File"
-                                        input.form-control.fileinput(type="file",name="#{field.name}",id="#{field.name}",accept="#{field.options.join(',')}")
-                                        small.form-text.text-muted Allowed extensions: #{field.options.join(",")}
+                                        input.form-control.fileinput(type="file",name="#{field.name}",id="#{field.name}",accept="#{field.options.join(',')}", sizelimit="#{field.sizelimit}")
+                                        small.form-text.text-muted Allowed extensions: #{field.options.join(",")}. Size limit: #{field.sizelimit} MB
                                     else
                                         input.form-control(type="#{field.type}",name="#{field.name}",id="#{field.name}")
                 button.btn.btn-primary(type="submit",id="submit") Submit

@@ -22,6 +22,8 @@ var field =// change id,name,for
       </div> \
       <div class="col-sm-2"><button id="remove--" type="button" class="btn btn-danger removeField">Remove Field</button></div> \
    </div> \
+   \
+   \
    <div class="form-group row"> \
       <label for="isRequired--" class="col-sm-2 col-form-label">Required*:</label> \
       <label class="form-check-inline col-sm-2"> \
@@ -37,6 +39,17 @@ var field =// change id,name,for
         <div class="col-sm-3"> \
          <input type="text" name="options--" id="options--" class="form-control" placeholder="E.g: option1,option2"> \
          <small class="form-text text-muted" id="optionshelp--">Help Text</small> \
+        </div> \
+      </div> \
+    </div> \
+    \
+    \
+    <div class="form-group row"> \
+      <div id="sizelimitdiv--" style="display: none;">\
+        <label for="sizelimit--" class="col-sm-2 col-form-label">Size Limit*:</label> \
+        <div class="col-sm-3"> \
+         <input type="number" step="any" name="sizelimit--" id="sizelimit--" class="form-control" placeholder="E.g: 2"> \
+         <small class="form-text text-muted"> Enter file size limit in MB </small> \
         </div> \
       </div> \
    </div> \
@@ -61,6 +74,17 @@ function hideOptions(index) {
     $("#options-"+index+"-").val("");
 }
 
+function showSizeLimit(index) {
+  $("#sizelimitdiv-"+index+"-").show();
+  $("#sizelimit-"+index+"-").prop("required", true);
+  $("#sizelimit-"+index+"-").val("");  
+}
+
+function hideSizeLimit(index) {
+  $("#sizelimitdiv-"+index+"-").hide();
+  $("#sizelimit-"+index+"-").removeProp("required");
+}
+
 function addField() {
     currentFieldIndex++;
     $("#fields").append(replaceAll(field,"--","-"+currentFieldIndex+"-"));
@@ -75,10 +99,18 @@ function replaceAll(str,search,replace){
 
 $(document).on("change", ".typeselect", function(){
     var index = extractIndex($(this).prop("id"));
-    if($(this).val()=="File" || $(this).val() == "Select")
+    if($(this).val()=="File") {
       showOptions(index);
-    else 
+      showSizeLimit(index);
+    } 
+    else if($(this).val() == "Select"){
+      showOptions(index);
+      hideSizeLimit(index);
+    }
+    else {
       hideOptions(index);
+      hideSizeLimit(index);
+    }
 });
 
 
@@ -123,6 +155,12 @@ function constructData() {
           field.options = $("#options-"+i+"-").val().split(",")
           for (var j = field.options.length - 1; j >= 0; j--)
             field.options[j] = $.trim(field.options[j]);
+        }
+
+        if($("#sizelimit-"+i+"-").val() == undefined ||$("#sizelimit-"+i+"-").val() == "" )
+          field.sizelimit = "";
+        else {
+          field.sizelimit = $("#sizelimit-"+i+"-").val();
         }
         fields.push(field);
     }
