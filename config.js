@@ -11,5 +11,5 @@ nconf
     OAUTH2_CLIENT_SECRET: "x1sPDoAGDlYYa6pkKe5GOt2G",
     OAUTH2_CALLBACK: "http://localhost:8080/auth/google/callback",
     PORT: 8080,
-    ADMIN_EMAILS: ["GCP@cloud-11.com","slashhashdash@gmail.com"]
+    ADMIN_EMAILS: ["GCP@cloud-11.com"]
   });
