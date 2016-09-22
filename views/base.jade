@@ -1,4 +1,8 @@
-- var navBarItems = [{'page':'/create', 'name': 'create'}, {"page": '/', 'name': 'home'}]
+- var navBarItems = [ {"page": '/', 'name': 'home'}, {'page':'/create', 'name': 'create'}];
+- var admin = {'page':'/admin', 'name': 'Admin Dashboard'};
+- if (typeof isAdmin !== 'undefined' && isAdmin == true)
+  -  navBarItems.push(admin)
+
 doctype html
 html(lang="en")
   head
@@ -16,7 +20,7 @@ html(lang="en")
 
         ul.nav.navbar-nav
           if profile
-            - for (var i = navBarItems.length - 1; i >= 0; i--)
+            - for (var i = 0; i < navBarItems.length; i++)
                 if page == navBarItems[i].page
                   li.active
                     a(onclick='return false;') #{navBarItems[i].name}

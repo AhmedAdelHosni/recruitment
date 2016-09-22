@@ -12,7 +12,6 @@ var express = require('express'),
     GDriveHelpers = require('../modules/GDriveHelpers'),
     Helpers = require('../modules/Helpers');
 
-
 router.use(oauth2.required);
 router.use(oauth2.template);
 /* GET users listing. */
@@ -25,18 +24,29 @@ router.get('/', function(req, res, next) {
     query.exec(function(err, user) {
         res.render('home.jade', {
                 title: "Cloud 11 - Recruitment App",
-                forms: user.forms
-            });
+                forms: user.forms,
+                isAdmin: config.get("ADMIN_EMAILS").indexOf(req.user.email) != -1
+            }
+        );
     });
     
 });
 
 router.get('/create', function(req, res) {
-    res.render('createormodify.jade', {title: "Create New Form", action: "create"});
+    res.render('createormodify.jade', {
+            title: "Create New Form",
+            action: "create",
+            isAdmin: config.get("ADMIN_EMAILS").indexOf(req.user.email) != -1
+    });
 });
 
 router.get('/edit', function(req, res) {
-    res.render('createormodify.jade', {title: "Edit form", action: "edit", id: req.query.id});
+    res.render('createormodify.jade', {
+                title: "Edit form",
+                action: "edit",
+                id: req.query.id,
+                isAdmin: config.get("ADMIN_EMAILS").indexOf(req.user.email) != -1
+        });
 });
 
 router.post('/submitform', function(req, res) {
@@ -192,7 +202,10 @@ router.post('/getform', function(req, res) {
 
 router.get('/delete', function(req, res) {
     FormSchema.findById(req.query.id).remove(function(err, deletedForm){
-        res.render("removed.jade", {"title": "Form Removed"});
+        res.render("removed.jade", {
+            "title": "Form Removed",
+            isAdmin: config.get("ADMIN_EMAILS").indexOf(req.user.email) != -1
+        });
     });
 });
 

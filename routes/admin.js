@@ -1,0 +1,35 @@
+var express = require('express'),
+    router = express.Router(),
+    config = require('../config'),
+    oauth2 = require('../modules/oauth2'),
+    UserSchema = require('../models/User'),
+    FormSchema = require('../models/Form'),
+    ObjectID = require('mongodb').ObjectID;
+
+
+router.use(oauth2.required);
+router.use(oauth2.template);
+
+
+router.get('/admin', function(req, res) {
+    if(config.get("ADMIN_EMAILS").indexOf(req.user.email) == -1) {
+        res.send("You are not an admin.");
+        return;
+    }
+
+    var query = UserSchema.find({});
+    query.populate({
+        path: 'forms',
+        select: 'title'
+    });
+
+    query.exec(function(err, users){
+        res.render('admin.jade', {
+                title: "Cloud 11 - Recruitment App Admin Dashboard",
+                users: users
+            }
+        );
+    });
+});
+
+module.exports = router;

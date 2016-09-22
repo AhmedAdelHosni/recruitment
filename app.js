@@ -31,15 +31,19 @@ app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 
+
+//ORDER MATTERS
+
 //OAuth2
 app.use(express.static(__dirname + '/statics'));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(require('./routes/applicant'));//ORDER MATTERS
+app.use(require('./routes/applicant'));
 app.use(require('./modules/oauth2').router);
 app.use(require('./routes/notloggedin'));
+app.use(require('./routes/admin'));
 app.use(require('./routes/manage'));
-
+////////////////////////////////////////////
 
 // Basic 404 handler
 app.use(function (req, res) {

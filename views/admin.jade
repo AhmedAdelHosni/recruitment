@@ -1,0 +1,26 @@
+extends base.jade
+
+block content
+    .container
+        h1.text-center Admin Dashboard
+        h2 Number of users: #{users.length}
+        table.table.table-striped.table-bordered
+            tr.row
+                th.col-sm-1
+                    | #
+                th.col-sm-4
+                    | User
+                th.col-sm-5
+                    | Email
+                th.col-sm-2
+                    | Number of Forms
+            - for (var i = 0; i < users.length ; i++)
+                tr.row
+                    td.col-sm-1
+                        | #{i+1}
+                    td.col-sm-5
+                        | #{users[i].name}
+                    td.col-sm-5
+                        | #{users[i].email}
+                    td.col-sm-2
+                        | #{users[i].forms.length}
