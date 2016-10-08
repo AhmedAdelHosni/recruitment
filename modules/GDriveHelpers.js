@@ -2,6 +2,17 @@ var Promise = require('promise'),
     fs = require('fs'),
     mime = require('mime');
 
+function resolveIDCallback(resolve, reject, err, res) {
+    if(err){
+        console.log(err);
+        reject(err);
+    }
+    else {
+        console.log(res);
+        resolve(res.id);
+    }
+}
+
 function shareFile(driveService, fileId, callback) {
     var email = require('../auth.json').client_email;
     driveService.permissions.create({
@@ -26,15 +37,13 @@ function insertInSpreadSheet(fieldNames, formData, doc, creds, folderLink, resol
     row["folder link"] = folderLink;
     doc.useServiceAccountAuth(creds, function(err, res){
         doc.addRow(1, row , function(err, res){
-            console.log("PROMISE END: insertInSpreadSheet err=");
-            console.log(err);
             if(err){
+                console.log(err);
                 reject(err);
-                return;
             }
-            else{
+            else {
+                console.log(res);
                 resolve(true);
-                console.log("resolving now insertInSpreadSheet");
             }
         });
     });
@@ -62,18 +71,7 @@ function createFile(fileName, mimeType, driveService, parentsIds, resolve, rejec
         }    
     }
     
-    driveService.files.create(params,
-    function(err, file) {
-        console.log("PROMISE END: I create file/folder, file.id=" + file.id + "err=");
-        console.log(err);
-        if(err){
-            reject(err);
-            return;
-        }
-        
-        resolve(file.id);
-        console.log("resolving now I create file/folder");
-    });
+    driveService.files.create(params, resolveIDCallback.bind(undefined, resolve, reject));
 
 }
 
@@ -109,18 +107,7 @@ function createDoc(fields, formData, driveService, parentsIds, resolve, reject) 
         resource: fileMetaData,
         fields: "id",
         media: media
-    },
-    function(err, file) {
-        console.log("PROMISE END: I create doc, file.id="+file.id+"err = ");
-        console.log(err);
-        if(err){
-            reject(err);
-            return;
-        }
-        
-        resolve(true);
-        console.log("resolving now I create doc");
-    });
+    }, resolveIDCallback.bind(undefined, resolve, reject));
 }
 
 function uploadFile(name, path, driveService, parentsIds, resolve, reject) {
@@ -136,18 +123,7 @@ function uploadFile(name, path, driveService, parentsIds, resolve, reject) {
        resource: fileMetaData,
        media: media,
        fields: 'id'
-    },
-    function(err, file) {
-        console.log("END SUB PROMISE: upload file, have file.id="+file.id+"err=");
-        console.log(err);
-        if(err){
-            reject(err);
-            return;
-        }
-        
-        resolve(file.id);
-        console.log("resolving now upload file");
-    });
+    }, resolveIDCallback.bind(undefined, resolve, reject));
 }
 
 function uploadFiles(files, driveService, parentsIds, resolve, reject) {

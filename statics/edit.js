@@ -1,3 +1,9 @@
+function loadDataIntoFields(data) {
+  for (var i = formFields.length - 1; i >= 0; i--) {
+    $("#"+formFields[i]).val(data[formFields[i]]);
+  }
+}
+
 $(document).ready(function(){
     $.ajax({
     type: "POST",
@@ -6,17 +12,12 @@ $(document).ready(function(){
     success: function(ret){
       if(ret.success){
         var form = ret.form;
-        
-        $("#title").val(form.title);
-        $("#companyName").val(form.companyName);
-        $("#description").val(form.description);
-        $("#companyBannerUrl").val(form.companyBannerUrl);
-        $("#emailImageUrl").val(form.emailImageUrl);
-        $("#bgColor").val(form.bgColor);
+
+        loadDataIntoFields(form);
 
         for (var i = 1 ; i <= form.fields.length; i++) {
           //1-name 2-type 3-options 4-sizelimit 5-required
-          addField();
+          insertNewField();
           var field = form.fields[i-1];
           $("#name-"+i+"-").val(field.name);
           $("#type-"+i+"-").val(field.type);

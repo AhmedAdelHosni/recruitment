@@ -1,5 +1,7 @@
-var mongoose  = require('mongoose');
-var Schema  = mongoose.Schema;
+var UserSchema = require('./User'),
+    mongoose  = require('mongoose'),
+    Schema  = mongoose.Schema,
+    ObjectID = require('mongodb').ObjectID;
 
 var FormSchema = new Schema({
     title: String,
@@ -15,8 +17,9 @@ var FormSchema = new Schema({
     fields: { type: Array }
 }, {collection: 'Form'});
 
-// FormSchema.pre('remove', function(next) {
-//     this.model('Assignment').remove({ person: this._id }, next);
-// });
+//delete form from user
+FormSchema.pre('remove', function(next) {
+    UserSchema.update({ forms: this._id},{ $pull: { forms: this._id } }, next);
+});
 
 module.exports = mongoose.model('Form', FormSchema);

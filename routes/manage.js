@@ -85,6 +85,11 @@ router.post('/submitform', function(req, res) {
 
             /////////////////////////////////////////////////////////////
             if(body.hasOwnProperty("id")){//if updating form
+                if(user.forms.indexOf(req.body.id) == -1) {
+                    res.send({"success": false, "error": "Your account does not include this form"});
+                    return;
+                }
+
                 FormSchema.findById(req.body.id).exec(function(err, form){
                     var doc = new GoogleSpreadsheet(form.sheetsId, user.accessToken);
                     var creds = require('../auth.json');
@@ -155,7 +160,7 @@ router.post('/submitform', function(req, res) {
                 initialPromises.push(createFormFolderPromise);
                 initialPromises.push(createSpreadSheetPromise);
 
-                console.log("now im calling initialPromises");
+                console.log("calling initialPromises");
                 Promise.all(initialPromises).then(function (allResponses){
                     console.log("initial promises");
                     console.log(allResponses);
@@ -190,21 +195,40 @@ router.post('/submitform', function(req, res) {
 
 
 router.post('/getform', function(req, res) {
-    var query = FormSchema.findById(req.body.id);
-    query.exec(function(err, form) {
-        if(err){
-            res.send({"success": false, "error": JSON.stringify(err)});
-        }
-        res.send({"success": true, "form": form});
-    });
+    var userId = req.user.id;
+    var formId = req.body.id;
+    UserSchema.findOne({gid: userId}).exec(function (err, user) {
 
+        if(user.forms.indexOf(formId) == -1) {
+            res.send({"success": false, "error": "Your account does not include this form"});
+            return;
+        }
+
+        FormSchema.findById(formId).exec(function(err, form) {
+            if(err){
+                res.send({"success": false, "error": JSON.stringify(err)});
+            }
+            res.send({"success": true, "form": form});
+        });
+    });
 });
 
 router.get('/delete', function(req, res) {
-    FormSchema.findById(req.query.id).remove(function(err, deletedForm){
-        res.render("removed.jade", {
-            "title": "Form Removed",
-            isAdmin: config.get("ADMIN_EMAILS").indexOf(req.user.email) != -1
+    var userId = req.user.id;
+    var formId = req.query.id;
+    UserSchema.findOne({gid: userId}).exec(function(err, user){
+
+        if(user.forms.indexOf(formId) == -1) {
+            res.send({"success": false, "error": "Your account does not include this form"});
+            return;
+        }
+
+        FormSchema.findById(formId).exec(function(err, formToDelete){
+            res.render("removed.jade", {
+                "title": "Form Removed",
+                isAdmin: config.get("ADMIN_EMAILS").indexOf(req.user.email) != -1
+            });
+            formToDelete.remove();
         });
     });
 });

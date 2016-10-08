@@ -1,3 +1,4 @@
+var formFields = ["title", "companyName", "description", "companyBannerUrl", "emailImageUrl", "bgColor"];
 var currentFieldIndex = 0;
 
 var field =// change id,name,for
@@ -85,7 +86,7 @@ function hideSizeLimit(index) {
   $("#sizelimit-"+index+"-").removeProp("required");
 }
 
-function addField() {
+function insertNewField() {
     currentFieldIndex++;
     $("#fields").append(replaceAll(field,"--","-"+currentFieldIndex+"-"));
 }
@@ -116,7 +117,7 @@ $(document).on("change", ".typeselect", function(){
 
 
 $(document).on("click", "#addFieldBtn", function(){
-    addField();
+    insertNewField();
 });
 
 $(document).on("click", ".removeField", function(){
@@ -124,59 +125,55 @@ $(document).on("click", ".removeField", function(){
     $("#field-"+index+"-").remove();
 });
 
-function constructData() {
-  var data = {
-        title: $("#title").val(),
-        companyName: $("#companyName").val(),
-        companyBannerUrl: $("#companyBannerUrl").val(),
-        description: $("#description").val(),
-        emailImageUrl: $("#emailImageUrl").val(),
-        bgColor: $("#bgColor").val()
-    };
+function constructFormData() {
+  var data = {};
+  for (var i = 0; i < formFields.length; i++) {
+    data[formFields[i]] = $("#"+formFields[i]).val();
+  }
 
-    if(getUrlParameter("id"))
-      data.id = getUrlParameter("id");
+  if(getUrlParameter("id"))
+    data.id = getUrlParameter("id");
 
-    //get all fields
-    var fields = [];
-    for (var i = 1; i <= currentFieldIndex ; i++) {
-        if($("#name-"+i+"-").val() == undefined){//removed field
-          continue;
-        }
-        var field = {
-            name : $("#name-"+i+"-").val(),
-            type : $("#type-"+i+"-").val(),
-            isRequired : $("input[name=isRequired-"+i+"-]:checked").val() == "yes" ? true : false
-        };
-        
-        if($("#options-"+i+"-").val() == undefined || $("#options-"+i+"-").val() == "")
-          field.options = [""];
-        else {
-          field.options = $("#options-"+i+"-").val().split(",")
-          for (var j = field.options.length - 1; j >= 0; j--)
-            field.options[j] = $.trim(field.options[j]);
-        }
+  //get all fields
+  var fields = [];
+  for (var i = 1; i <= currentFieldIndex ; i++) {
+      if($("#name-"+i+"-").val() == undefined){//removed field
+        continue;
+      }
+      var field = {
+          name : $("#name-"+i+"-").val(),
+          type : $("#type-"+i+"-").val(),
+          isRequired : $("input[name=isRequired-"+i+"-]:checked").val() == "yes" ? true : false
+      };
+      
+      if($("#options-"+i+"-").val() == undefined || $("#options-"+i+"-").val() == "")
+        field.options = [""];
+      else {
+        field.options = $("#options-"+i+"-").val().split(",")
+        for (var j = field.options.length - 1; j >= 0; j--)
+          field.options[j] = $.trim(field.options[j]);
+      }
 
-        if($("#sizelimit-"+i+"-").val() == undefined ||$("#sizelimit-"+i+"-").val() == "" )
-          field.sizelimit = "";
-        else {
-          field.sizelimit = $("#sizelimit-"+i+"-").val();
-        }
-        fields.push(field);
-    }
-    var emailFields = [];
-    for (var i = 0; i< 3; i++){
-        emailFields.push($("#email"+(i+1)).val());
-    }
+      if($("#sizelimit-"+i+"-").val() == undefined ||$("#sizelimit-"+i+"-").val() == "" )
+        field.sizelimit = "";
+      else {
+        field.sizelimit = $("#sizelimit-"+i+"-").val();
+      }
+      fields.push(field);
+  }
+  var emailFields = [];
+  for (var i = 0; i< 3; i++){
+      emailFields.push($("#email"+(i+1)).val());
+  }
 
-    for (var i = fields.length - 1; i >= 0; i--)
-      for (var j = i - 1; j >= 0; j--)
-        if($.trim(fields[i].name.toLowerCase()) == $.trim(fields[j].name.toLowerCase()))
-          return false;
+  for (var i = fields.length - 1; i >= 0; i--)
+    for (var j = i - 1; j >= 0; j--)
+      if($.trim(fields[i].name.toLowerCase()) == $.trim(fields[j].name.toLowerCase()))
+        return false;
 
-    data.fields = JSON.stringify(fields);
-    data.emailFields = JSON.stringify(emailFields);
-    return data;
+  data.fields = JSON.stringify(fields);
+  data.emailFields = JSON.stringify(emailFields);
+  return data;
 }
 
 
@@ -192,7 +189,7 @@ function submitData(data) {
         window.location = "/edit?id="+ret.formId;
       }
       else
-        alert("An error has occured.");
+        alert("An error has occured." + ret.error);
     }
   });
 }
@@ -218,13 +215,12 @@ $(document).on("click", "#submit", function(event){
               return ;
 
 
-    var data = constructData();
+    var data = constructFormData();
 
     if(data == false){
         alert("You can not have two fields with the same name.");
         return false;
     }
-    
     submitData(data);
     return false;
 });

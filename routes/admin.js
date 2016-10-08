@@ -17,13 +17,7 @@ router.get('/admin', function(req, res) {
         return;
     }
 
-    var query = UserSchema.find({});
-    query.populate({
-        path: 'forms',
-        select: 'title'
-    });
-
-    query.exec(function(err, users){
+    UserSchema.find({}).exec(function(err, users){
         res.render('admin.jade', {
                 title: "Cloud 11 - Recruitment App Admin Dashboard",
                 users: users

@@ -1,7 +1,7 @@
 $(document).ready(function(){
-    addField();
-    addField();
-    addField();
+    insertNewField();
+    insertNewField();
+    insertNewField();
     $("#name-1-").val("First Name");
     $("#name-2-").val("Last Name");
     $("#name-3-").val("Email");

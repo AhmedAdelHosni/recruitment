@@ -5,13 +5,13 @@ var path = require('path');
 var config = require('./config');
 var bodyParser = require('body-parser');
 var multer  = require('multer')
-var upload = multer({dest: './uploads/'});
+var upload = multer();
 
 var app = express();
 app.use(session({
     resave: false,
     saveUninitialized: false,
-    secret: config.get('SECRET'),
+    secret: config.get('SESSION_SECRET'),
     signed: true
 }));
 
@@ -23,7 +23,7 @@ app.set('view engine', 'jade');
 
 // Connect to MongoDB
 var mongodb = require('./modules/db');
-mongodb.connect('mongodb://cloud11recruitment:1234567890aA@ds011775.mlab.com:11775/recruitment-app', function () {
+mongodb.connect(config.get("MONGO_URL"), function () {
     console.log('Connected to MongoDB.');
 });
 app.use(upload.any());

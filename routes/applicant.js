@@ -86,7 +86,7 @@ router.post('/applicantsubmit', function(req, res) {
                 console.log("--------------------");
                 //create promises
                 
-                console.log("now im calling all the other promises");
+                console.log("calling all the other promises");
 
                 var createApplicantFolderPromise = new Promise(function (resolve, reject){
                     console.log('PROMISE START: createApplicantFolderPromise')
