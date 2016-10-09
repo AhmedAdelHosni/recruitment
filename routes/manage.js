@@ -170,14 +170,16 @@ router.post('/submitform', function(req, res) {
                     form.sheetsId = allResponses[1];
 
                     GDriveHelpers.shareFile(driveService, form.sheetsId, function(err, response){
-                        form.save(function(err,formSaved){
-                            if(err){
+                        if (err) {
+                            return res.send({"success": false, "error": JSON.stringify(err)});
+                        }
+                        
+                        form.save(function(err, formSaved){
+                            if (err) {
                                 return res.send({"success": false, "error": JSON.stringify(err)});
                             }        
-                            UserSchema.findOneAndUpdate({gid: req.user.id}, 
-                            { $push: {"forms": form} },
-                            function(err, updatedUser) {
-                                if(err){
+                            UserSchema.findOneAndUpdate({gid: req.user.id}, { $push: {"forms": form} }, function(err, updatedUser) {
+                                if (err) {
                                     return res.send({"success": false, "error": JSON.stringify(err)});
                                 }
                                 res.send({"success": true, "formId": form._id.toString()});

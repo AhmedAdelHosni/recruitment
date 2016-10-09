@@ -45,14 +45,14 @@ function sendEmail(gmailService, fromName, to, from, subject, body, resolve, rej
             raw: raw
         }
     }, function(err, res) {
-        console.log("PROMISE END: SEND EMAIL err=");
-        console.log(err);
         if(err){
+            console.log("rejecting: SEND EMAIL err=");
+            console.log(err);
             reject(err);
             return;
         }
         resolve(true);
-        console.log("resolving now: SEND EMAIL")
+        console.log("resolving: SEND EMAIL")
     });
 }
 

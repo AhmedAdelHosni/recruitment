@@ -110,14 +110,14 @@ function createDoc(fields, formData, driveService, parentsIds, resolve, reject) 
     }, resolveIDCallback.bind(undefined, resolve, reject));
 }
 
-function uploadFile(name, path, driveService, parentsIds, resolve, reject) {
+function uploadFile(name, buffer, driveService, parentsIds, resolve, reject) {
     var fileMetaData = {
         'name': name,
         parents: parentsIds,
     };
     var media = {
         mimeType: mime.lookup(name),
-        body: fs.createReadStream(path)
+        body: buffer
     };
     driveService.files.create({
        resource: fileMetaData,
@@ -130,7 +130,7 @@ function uploadFiles(files, driveService, parentsIds, resolve, reject) {
     var allFilesPromises = [];
     for (var i = files.length - 1; i >= 0; i--) {
         var filePromise = new Promise(function (resolve, reject){
-            uploadFile(files[i].originalname, files[i].path, driveService, parentsIds, resolve, reject);
+            uploadFile(files[i].originalname, files[i].buffer, driveService, parentsIds, resolve, reject);
         }); //end promise
         allFilesPromises.push(filePromise);
     }
