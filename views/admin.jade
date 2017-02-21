@@ -14,6 +14,8 @@ block content
                     | Email
                 th.col-sm-2
                     | Number of Forms
+                th.col-sm-1
+                    | delete
             - for (var i = 0; i < users.length ; i++)
                 tr.row
                     td.col-sm-1
@@ -24,3 +26,6 @@ block content
                         | #{users[i].email}
                     td.col-sm-2
                         | #{users[i].forms.length}
+                    td.col-sm-1
+                          a.btn.btn-danger(href='/admin/delete?id=#{users[i]._id}') delete
+

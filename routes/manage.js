@@ -33,10 +33,20 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/create', function(req, res) {
-    res.render('createormodify.jade', {
-            title: "Create New Form",
-            action: "create",
-            isAdmin: config.get("ADMIN_EMAILS").indexOf(req.user.email) != -1
+    console.log(req.user.id);
+    UserSchema.findOne({"gid":req.user.id},function(err,user){
+        if(user.forms.length == 10){
+            res.render('MaxFormLimit.jade',{
+                title: "Limit Reached"
+            })
+        }
+        else{
+            res.render('createormodify.jade', {
+                title: "Create New Form",
+                action: "create",
+                isAdmin: config.get("ADMIN_EMAILS").indexOf(req.user.email) != -1
+            });
+        }
     });
 });
 
@@ -168,17 +178,23 @@ router.post('/submitform', function(req, res) {
 
                     form.folderId = allResponses[0];
                     form.sheetsId = allResponses[1];
-
+                    console.log("I'm just before GDriveHelpers");
                     GDriveHelpers.shareFile(driveService, form.sheetsId, function(err, response){
+                        console.log("I'm in GDriveHelpers shareFile");
+                        console.log(response);
                         if (err) {
                             return res.send({"success": false, "error": JSON.stringify(err)});
                         }
                         
                         form.save(function(err, formSaved){
+                            console.log("I'm in formSaved");
+                            console.log(formSaved);
                             if (err) {
                                 return res.send({"success": false, "error": JSON.stringify(err)});
                             }        
                             UserSchema.findOneAndUpdate({gid: req.user.id}, { $push: {"forms": form} }, function(err, updatedUser) {
+                                console.log("I'm in findOneAndUpdate");
+                                console.log(updatedUser);
                                 if (err) {
                                     return res.send({"success": false, "error": JSON.stringify(err)});
                                 }

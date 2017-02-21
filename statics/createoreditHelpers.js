@@ -178,6 +178,8 @@ function constructFormData() {
 
 
 function submitData(data) {
+  alert("I'm in submit data");
+  console.log(data);
   var url = "/submitform";
   $.ajax({
     type: "POST",
@@ -195,6 +197,7 @@ function submitData(data) {
 }
 
 $(document).on("click", "#submit", function(event){
+    alert("I'm in click");
     var fields = $('input,textarea,select').filter('[required]:visible');
     var flag = false;
     var is_safari = navigator.userAgent.indexOf("Safari") > -1;

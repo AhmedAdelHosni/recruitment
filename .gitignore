@@ -2,3 +2,5 @@ node_modules/
 npm-debug.log
 auth.json
 config.json
+config.sublime-workspace
+

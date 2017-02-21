@@ -12,6 +12,7 @@ router.use(oauth2.template);
 
 
 router.get('/admin', function(req, res) {
+
     if(config.get("ADMIN_EMAILS").indexOf(req.user.email) == -1) {
         res.send("You are not an admin.");
         return;
@@ -21,9 +22,18 @@ router.get('/admin', function(req, res) {
         res.render('admin.jade', {
                 title: "Cloud 11 - Recruitment App Admin Dashboard",
                 users: users
-            }
+            }   
         );
     });
+});
+
+router.get('/admin/delete', function(req,res){
+
+    console.log(req.query.id);
+    
+    UserSchema.findById(req.query.id).remove().exec();
+
+    res.redirect('/admin');
 });
 
 module.exports = router;
