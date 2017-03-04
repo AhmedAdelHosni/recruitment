@@ -17,7 +17,7 @@
 ## Setup
 * Setup a MongoDB (Demo uses [mlab.com](http://mlab.com))
 * Create a google project using the developer console
- * Enable the `Drive`, `Sheets` and `Gmail` APIs
+ * Enable the `Drive`, `Sheets` and `Gmail`, `Google+` APIs
  * Create OAuth Client ID and Service account key
 * Create a `config.json` in the project root directory with for the following keys:  
 

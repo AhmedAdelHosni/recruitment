@@ -30,12 +30,16 @@ function shareFile(driveService, fileId, callback) {
 doc: GoogleSpreadsheet object
 */
 function insertInSpreadSheet(fieldNames, formData, doc, creds, folderLink, resolve, reject) {
-    var row = {}
+    var row = {};
     for(var i = 0; i < fieldNames.length; i++){
         row[fieldNames[i]] = formData[fieldNames[i]] || "";
     }
     row["folder link"] = folderLink;
     doc.useServiceAccountAuth(creds, function(err, res){
+        if(err){
+            console.log("error=");
+            console.log(err.msg);
+        }
         doc.addRow(1, row , function(err, res){
             if(err){
                 console.log(err);
@@ -70,7 +74,6 @@ function createFile(fileName, mimeType, driveService, parentsIds, resolve, rejec
             body: lineToInsert
         }    
     }
-    
     driveService.files.create(params, resolveIDCallback.bind(undefined, resolve, reject));
 
 }

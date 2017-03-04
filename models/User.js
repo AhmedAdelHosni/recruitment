@@ -8,6 +8,7 @@ var UserSchema = new Schema({
     image: String,
     accessToken: String,
     refreshToken: String,
+    folderId: String,
     forms: [{ type: Schema.ObjectId, ref: 'Form' }],
 }, {collection: 'User'});
 

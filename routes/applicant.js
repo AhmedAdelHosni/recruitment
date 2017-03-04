@@ -96,7 +96,7 @@ router.post('/applicantsubmit', function(req, res) {
                 Promise.all([createApplicantFolderPromise]).then(function (allResponses){ 
                     var applicantFolderId = allResponses[0];
                     var folderLink = 'https://drive.google.com/drive/folders/'+applicantFolderId;
-
+                    console.log("folderLink="+folderLink);
                     var createDocPromise = new Promise(function (resolve, reject){
                         console.log('PROMISE START1: createDocPromise')
                         GDriveHelpers.createDoc(form.fields, req.body, driveService, [applicantFolderId], resolve, reject);

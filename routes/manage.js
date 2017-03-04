@@ -71,6 +71,7 @@ router.post('/submitform', function(req, res) {
         emailFields: JSON.parse(body.emailFields),
         fields: JSON.parse(body.fields)
     };
+
     console.log(formObject);
     var form = new FormSchema(formObject);
 
@@ -153,7 +154,7 @@ router.post('/submitform', function(req, res) {
                 var initialPromises = [];    
                 var createFormFolderPromise = new Promise(function (resolve, reject){
                     console.log('gonna createFormFolderPromise');
-                    GDriveHelpers.createFile("Recruitment - "+form.title, "folder", driveService, null, resolve, reject);
+                    GDriveHelpers.createFile(form.title, "folder", driveService, [user.folderId], resolve, reject);
                 });
                 var createSpreadSheetPromise  = new Promise(function (resolve, reject){
                     console.log('gonna createSpreadSheetPromise');
@@ -165,7 +166,7 @@ router.post('/submitform', function(req, res) {
                     }
                     var headers = fieldNames.join(",");
                     headers+=",folder link";
-                    GDriveHelpers.createFile("Recruitment - "+form.title, "spreadsheet", driveService, null, resolve, reject, headers);
+                    GDriveHelpers.createFile(form.title, "spreadsheet", driveService, [user.folderId], resolve, reject, headers);
                 });
                 initialPromises.push(createFormFolderPromise);
                 initialPromises.push(createSpreadSheetPromise);

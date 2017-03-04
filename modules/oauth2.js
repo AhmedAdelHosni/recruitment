@@ -13,9 +13,12 @@
 
 'use strict';
 
-var express = require('express');
-var config = require('../config');
-var url = require ('url');
+var express = require('express'),
+    config = require('../config'),
+    url = require ('url'),
+    google = require('googleapis'),
+    GDriveHelpers = require('../modules/GDriveHelpers'),
+    googleAuth = require('google-auth-library');
 
 // [START setup]
 var passport = require('passport');
@@ -54,7 +57,6 @@ var myGoogleStrategy = new GoogleStrategy({
     if (profile.photos && profile.photos.length) {
         imageUrl = profile.photos[0].value;
     }
-
     var query = {
         'gid':profile.id
     };
@@ -67,12 +69,60 @@ var myGoogleStrategy = new GoogleStrategy({
     };
     if(refreshToken)
         user.refreshToken = refreshToken;
-    
-    UserSchema.findOneAndUpdate(query, user, {upsert:true}, function(err, doc){
-        // Extract the minimal profile information we need from the profile object
-        // provided by Google
-        cb(null, extractProfile(profile));
+
+    UserSchema.findOne(query, function(err, userFound){
+        if(userFound==null){ //signup
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////
+            // create folder for user that would contain all forms folders and spreadsheets
+
+            var refreshToken = user.refreshToken,
+                driveService = google.drive('v3'),
+                sheetsService = google.sheets('v4'),
+                gmailService = google.gmail('v1'),
+                auth = new googleAuth();
+
+            var oauth2Client = new auth.OAuth2(config.get('OAUTH2_CLIENT_ID'),config.get('OAUTH2_CLIENT_SECRET'),config.get('OAUTH2_CALLBACK'));
+            oauth2Client.credentials = {
+                access_token: accessToken,
+                refresh_token: refreshToken
+            };
+            google.options({ auth: oauth2Client }); // set auth as a global default
+
+            var createFormFolderPromise = new Promise(function (resolve, reject){
+                console.log('gonna createFormFolderPromise');
+                GDriveHelpers.createFile("Recruitment", "folder", driveService, null, resolve, reject);
+            });
+
+            Promise.all([createFormFolderPromise]).then(function (allResponses){
+                user.folderId = allResponses[0]; //get the user folder id
+
+                //update user with folderId
+                UserSchema.findOneAndUpdate(query, user, {upsert:true}, function(err, userUpdated){
+                    // Extract the minimal profile information we need from the profile object
+                    // provided by Google
+                    cb(null, extractProfile(profile));
+                });
+            }); //todo: clean this up
+
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////
+
+        }//end if user signup
+        //else login:
+
+        UserSchema.findOneAndUpdate(query, user, {upsert:true}, function(err, userUpdated){
+            // Extract the minimal profile information we need from the profile object
+            // provided by Google
+            cb(null, extractProfile(profile));
+        });
+
     });
+
+
+    
+    
 });
 
 refresh.use(myGoogleStrategy);
