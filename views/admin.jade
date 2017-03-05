@@ -1,6 +1,7 @@
 extends base.jade
 
 block content
+    script(src="adminHelper.js")
     .container
         h1.text-center Admin Dashboard
         h2 Number of users: #{users.length}
@@ -19,11 +20,11 @@ block content
                 th.col-sm-1
                     | Max Applicants
                 th.col-sm-1
-                    | 
+                    | delete
                 th.col-sm-1
-                    | 
+                    | Edit Max Forms
                 th.col-sm-1
-                    | 
+                    | Edit Max Applicants
                 th.col-sm-1
                     | Edit Form
                                         
@@ -50,13 +51,8 @@ block content
                     td.col-sm-1
                           a.btn.btn-danger(href='/admin/delete?id=#{users[i]._id}') delete
                     td.col-sm-1
-                          button.editMaxForms.btn.btn-success(class="EditMaxForms", href='#', userId = users[i]._id) EditMaxForms
+                          button.editMaxForms.btn.btn-success(class="EditMaxForms", href='#', userId = users[i]._id) Edit Max Forms
                     td.col-sm-1
-                          button.editMaxApplicants.btn.btn-info(class="EditMaxApplicants", href='#', userId = users[i]._id) EditMaxApplicants
+                          button.editMaxApplicants.btn.btn-info(class="EditMaxApplicants", href='#', userId = users[i]._id) Edit Max Applicants
                     td.col-sm-1
                           a.btn.btn-primary(href='/admin/editForms?id=#{users[i]._id}') Edit Forms
-
-
-
-
-

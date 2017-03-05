@@ -25,7 +25,8 @@ router.get('/', function(req, res, next) {
         res.render('home.jade', {
                 title: "Cloud 11 - Recruitment App",
                 forms: user.forms,
-                isAdmin: config.get("ADMIN_EMAILS").indexOf(req.user.email) != -1
+                isAdmin: config.get("ADMIN_EMAILS").indexOf(req.user.email) != -1,
+                myforms: false
             }
         );
     });

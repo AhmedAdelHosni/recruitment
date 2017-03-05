@@ -82,10 +82,11 @@ router.get('/admin/editForms',function(req,res){
 
     query.exec(function(err, user) {
         console.log(user);
-        res.render('adminViewForm.jade', {
+        res.render('home.jade', {
                 title: "Cloud 11 - Recruitment App",
                 forms: user.forms,
-                isAdmin: 1
+                isAdmin: 1,
+                myforms: false
             }
         );
     });
