@@ -27,7 +27,9 @@ jQuery.extend(jQuery.expr[':'], {
                     break;
                 }
             }
+
         }
+        
         return result;
     }
 });

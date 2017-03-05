@@ -14,6 +14,8 @@ block content
                     | #
                 th.col-sm-4
                     | Name
+                th.col-sm-2
+                    | # of Applicants
                 th.col-sm-4
                     | View
                 th.col-sm-4
@@ -26,6 +28,8 @@ block content
                         | #{i+1}
                     td.col-sm-4
                         | #{forms[i].title}
+                    td.col-sm-2
+                        | #{forms[i].numOfApplicants}
                     td.col-sm-4
                         a.btn.btn-success(href="/view?id=#{forms[i]._id}") View
                     td.col-sm-4

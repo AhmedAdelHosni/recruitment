@@ -18,11 +18,22 @@ var express = require('express'),
 
 router.get('/view', function(req, res) {
     FormSchema.findById(req.query.id).exec(function(err, form) {
-        res.render('view.jade', {
-            title: form.title,
-            form: form
+        UserSchema.findOne({forms: ObjectID(req.query.id)}).exec(function(err, user){
+            if(form.numOfApplicants == user.maxNumOfApplicantsPerForm){
+                res.render('LimitsReached.jade', {
+                    title: "Max Applicants",
+                    msg: "Max number of applicants reached for this form, please contact recruiter at " + user.email + "."
+                });
+            }
+            else {
+                res.render('view.jade', {
+                    title: form.title,
+                    form: form
+                });
+            }
         });
-    });
+    });//end form.findbyid
+    
 });
 
 function sendEmail(gmailService, fromName, to, from, subject, body, resolve, reject) {
@@ -63,6 +74,16 @@ router.post('/applicantsubmit', function(req, res) {
     UserSchema.findOne({forms: ObjectID(req.body.id)}).exec(function(err, user){
         console.log("found user");
         console.log("--------------------");
+
+        FormSchema.findById(req.body.id).exec(function(err, form) {
+            if(form.numOfApplicants == undefined){
+                form.numOfApplicants = 1;
+            }else{
+                form.numOfApplicants++;
+            }
+            form.save();
+        });
+
         var driveService = google.drive('v3'),
             sheetsService = google.sheets('v4'),
             gmailService = google.gmail('v1'),
@@ -75,6 +96,7 @@ router.post('/applicantsubmit', function(req, res) {
             oauth2Client.credentials = {
                 access_token: user.accessToken,
                 refresh_token: user.refreshToken
+
             };
             google.options({ auth: oauth2Client }); // set auth as a global default
 

@@ -8,7 +8,9 @@ var UserSchema = new Schema({
     image: String,
     accessToken: String,
     refreshToken: String,
-    folderId: String,
+	folderId: String,
+    maxNumOfForms: Number,
+    maxNumOfApplicantsPerForm: Number,
     forms: [{ type: Schema.ObjectId, ref: 'Form' }],
 }, {collection: 'User'});
 
