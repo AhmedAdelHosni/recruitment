@@ -15,6 +15,7 @@ $(document).ready(function(){
 
         loadDataIntoFields(form);
 
+
         for (var i = 1 ; i <= form.fields.length; i++) {
           //1-name 2-type 3-options 4-sizelimit 5-required
           insertNewField();

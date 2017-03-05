@@ -14,7 +14,8 @@ var FormSchema = new Schema({
     confirmationEmailForm: String,
     folderId: String,
     sheetsId: String,
-    fields: { type: Array }
+    fields: { type: Array },
+    numOfApplicants: Number,
 }, {collection: 'Form'});
 
 //delete form from user

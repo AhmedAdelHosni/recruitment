@@ -19,7 +19,7 @@ router.get('/', function(req, res, next) {
     var query = UserSchema.findOne({gid: req.user.id});
     query.populate({
         path: 'forms',
-        select: 'formId title fields'
+        select: 'formId title fields numOfApplicants'
     });
     query.exec(function(err, user) {
         res.render('home.jade', {
@@ -35,17 +35,29 @@ router.get('/', function(req, res, next) {
 router.get('/create', function(req, res) {
     console.log(req.user.id);
     UserSchema.findOne({"gid":req.user.id},function(err,user){
-        if(user.forms.length == 10){
-            res.render('MaxFormLimit.jade',{
-                title: "Limit Reached"
-            })
+        console.log("NOW CREATING NEW FORM");
+        var max;
+        if(user.maxNumOfForms == null){
+            res.render('LimitsReached.jade', {
+                title: "User Undefined",
+                msg: "You are not approved yet, please contact admin at " + config.get("ADMIN_EMAILS")[0] + "."
+            });
         }
         else{
-            res.render('createormodify.jade', {
-                title: "Create New Form",
-                action: "create",
-                isAdmin: config.get("ADMIN_EMAILS").indexOf(req.user.email) != -1
-            });
+            max = user.maxNumOfForms;
+            if(user.forms.length == max){
+                res.render('LimitsReached.jade',{
+                    title: "Form Limit Reached",
+                    msg: "Maximum number of forms has been reached, please contact admin at " + config.get("ADMIN_EMAILS")[0] + "."
+                });
+            }
+            else{
+                res.render('createormodify.jade', {
+                    title: "Create New Form",
+                    action: "create",
+                    isAdmin: config.get("ADMIN_EMAILS").indexOf(req.user.email) != -1
+                });
+            }
         }
     });
 });
@@ -95,7 +107,7 @@ router.post('/submitform', function(req, res) {
 
             /////////////////////////////////////////////////////////////
             if(body.hasOwnProperty("id")){//if updating form
-                if(user.forms.indexOf(req.body.id) == -1) {
+                if(user.forms.indexOf(req.body.id) == -1 && config.get("ADMIN_EMAILS").indexOf(req.user.email) == -1) {
                     res.send({"success": false, "error": "Your account does not include this form"});
                     return;
                 }
@@ -217,7 +229,7 @@ router.post('/getform', function(req, res) {
     var formId = req.body.id;
     UserSchema.findOne({gid: userId}).exec(function (err, user) {
 
-        if(user.forms.indexOf(formId) == -1) {
+        if(user.forms.indexOf(formId) == -1 && config.get("ADMIN_EMAILS").indexOf(req.user.email) == -1) {
             res.send({"success": false, "error": "Your account does not include this form"});
             return;
         }
@@ -236,7 +248,7 @@ router.get('/delete', function(req, res) {
     var formId = req.query.id;
     UserSchema.findOne({gid: userId}).exec(function(err, user){
 
-        if(user.forms.indexOf(formId) == -1) {
+        if(user.forms.indexOf(formId) == -1 && config.get("ADMIN_EMAILS").indexOf(req.user.email) == -1) {
             res.send({"success": false, "error": "Your account does not include this form"});
             return;
         }

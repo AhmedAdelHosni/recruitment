@@ -14,7 +14,9 @@ function resolveIDCallback(resolve, reject, err, res) {
 }
 
 function shareFile(driveService, fileId, callback) {
+    console.log("I'm in shareFile");
     var email = require('../auth.json').client_email;
+    console.log(email);
     driveService.permissions.create({
         resource: {
             'type': 'user',

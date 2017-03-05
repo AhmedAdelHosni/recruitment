@@ -8,24 +8,55 @@ block content
             tr.row
                 th.col-sm-1
                     | #
-                th.col-sm-4
+                th.col-sm-3
                     | User
-                th.col-sm-5
+                th.col-sm-3
                     | Email
                 th.col-sm-2
                     | Number of Forms
+                th.col-sm-2
+                    | Max # of Forms
                 th.col-sm-1
-                    | delete
+                    | Max Applicants
+                th.col-sm-1
+                    | 
+                th.col-sm-1
+                    | 
+                th.col-sm-1
+                    | 
+                th.col-sm-1
+                    | Edit Form
+                                        
             - for (var i = 0; i < users.length ; i++)
                 tr.row
                     td.col-sm-1
                         | #{i+1}
-                    td.col-sm-5
+                    td.col-sm-3
                         | #{users[i].name}
-                    td.col-sm-5
+                    td.col-sm-3
                         | #{users[i].email}
-                    td.col-sm-2
+                    td.col-sm-1
                         | #{users[i].forms.length}
                     td.col-sm-1
+                        if users[i].maxNumOfForms == undefined
+                            | NA
+                        else
+                            | #{users[i].maxNumOfForms}
+                    td.col-sm-1
+                         if users[i].maxNumOfApplicantsPerForm == undefined
+                            | NA
+                         else
+                            | #{users[i].maxNumOfApplicantsPerForm}
+                    td.col-sm-1
                           a.btn.btn-danger(href='/admin/delete?id=#{users[i]._id}') delete
+                    td.col-sm-1
+                          button.editMaxForms(class="EditMaxForms", href='#', userId = users[i]._id) EditMaxForms
+                    td.col-sm-1
+                          button.editMaxApplicants(class="EditMaxApplicants", href='#', userId = users[i]._id) EditMaxApplicants
+                    td.col-sm-1
+                          a.btn.btn-danger(href='/admin/editForms?id=#{users[i]._id}') Edit Forms
+
+
+
+
 

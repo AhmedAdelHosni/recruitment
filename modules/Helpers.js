@@ -7,7 +7,6 @@ function extractProperty(fields, propertyName) {
 }
 
 function createCSVHeader(fields){
-
     return extractProperty(fields, "name").join(",");
 }
 
