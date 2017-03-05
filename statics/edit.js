@@ -5,6 +5,7 @@ function loadDataIntoFields(data) {
 }
 
 $(document).ready(function(){
+    window.action="edit";
     $.ajax({
     type: "POST",
     url: "/getform",

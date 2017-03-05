@@ -178,16 +178,22 @@ function constructFormData() {
 
 
 function submitData(data) {
-  alert("I'm in submit data");
   console.log(data);
   var url = "/submitform";
+  $("#submit").attr("disabled","true");
+
   $.ajax({
     type: "POST",
     url: url,
     data: data,
     success: function(ret){
       if(ret.success){
-        alert("Form has been updated successfully.");
+        if(window.action=="edit") {
+          alert("Form has been updated successfully.");
+        }
+        else {
+          alert("Form has been created successfully.");
+        }
         window.location = "/edit?id="+ret.formId;
       }
       else
@@ -197,7 +203,6 @@ function submitData(data) {
 }
 
 $(document).on("click", "#submit", function(event){
-    alert("I'm in click");
     var fields = $('input,textarea,select').filter('[required]:visible');
     var flag = false;
     var is_safari = navigator.userAgent.indexOf("Safari") > -1;

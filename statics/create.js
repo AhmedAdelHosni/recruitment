@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    window.action="create";
     insertNewField();
     insertNewField();
     insertNewField();

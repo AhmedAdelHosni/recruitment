@@ -16,11 +16,11 @@ block content
                     | Name
                 th.col-sm-2
                     | # of Applicants
-                th.col-sm-4
+                th.col-sm-2
                     | View
-                th.col-sm-4
+                th.col-sm-2
                     | Edit
-                th.col-sm-4
+                th.col-sm-2
                     | Delete
             - for (var i = 0; i < forms.length ; i++)
                 tr.row
@@ -30,9 +30,9 @@ block content
                         | #{forms[i].title}
                     td.col-sm-2
                         | #{forms[i].numOfApplicants}
-                    td.col-sm-4
+                    td.col-sm-2
                         a.btn.btn-success(href="/view?id=#{forms[i]._id}") View
-                    td.col-sm-4
+                    td.col-sm-2
                         a.btn.btn-primary(href="/edit?id=#{forms[i]._id}") Edit
-                    td.col-sm-4
+                    td.col-sm-2
                         a.btn.btn-danger(href="/delete?id=#{forms[i]._id}") Delete

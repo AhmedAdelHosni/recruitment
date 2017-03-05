@@ -50,11 +50,11 @@ block content
                     td.col-sm-1
                           a.btn.btn-danger(href='/admin/delete?id=#{users[i]._id}') delete
                     td.col-sm-1
-                          button.editMaxForms(class="EditMaxForms", href='#', userId = users[i]._id) EditMaxForms
+                          button.editMaxForms.btn.btn-success(class="EditMaxForms", href='#', userId = users[i]._id) EditMaxForms
                     td.col-sm-1
-                          button.editMaxApplicants(class="EditMaxApplicants", href='#', userId = users[i]._id) EditMaxApplicants
+                          button.editMaxApplicants.btn.btn-info(class="EditMaxApplicants", href='#', userId = users[i]._id) EditMaxApplicants
                     td.col-sm-1
-                          a.btn.btn-danger(href='/admin/editForms?id=#{users[i]._id}') Edit Forms
+                          a.btn.btn-primary(href='/admin/editForms?id=#{users[i]._id}') Edit Forms
 
 
 
